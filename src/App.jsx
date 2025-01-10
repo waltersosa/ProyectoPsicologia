@@ -1,30 +1,51 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Certificates from './pages/Certificates';
-import MemoryGame from './games/MemoryGame'; // Importa el componente de juego
-import EmotionDetector from './games/EmotionDetector';
-import BreathingExercise from './games/BreathingExercise';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Perfil from './pages/perfil';
-import Avatar from './pages/Avatar';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Certificates from "./pages/Certificates";
+import MemoryGame from "./games/AtencionYMemoria/MemoryGame";
+import RecognizeEmotionsLevel1 from "./games/ComprensionEmocional/Nivel1/ReconocerEmociones1";
+import RecognizeEmotionsLevel2 from "./games/ComprensionEmocional/Nivel2/ReconocerEmociones2";
+import BreathingExercise from "./games/RegulacionEmocional/BreathingExercise";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Perfil from "./pages/Perfil";
+import Avatar from "./pages/Avatar";
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+      <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+        {/* Navbar siempre en la parte superior */}
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+
+        {/* Contenido principal crece dinámicamente */}
+        <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
+            {/* Página principal */}
             <Route path="/" element={<Home />} />
+
+            {/* Rutas generales */}
             <Route path="/certificados" element={<Certificates />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/avatar" element={<Avatar />} />
-            <Route path="/juegos/memoria" element={<MemoryGame />} />
-            <Route path="/juegos/emociones" element={<EmotionDetector />} />
-            <Route path="/juegos/respiracion" element={<BreathingExercise />} />
+
+            {/* Juegos */}
+            <Route path="/games/AtencionYMemoria/MemoryGame" element={<MemoryGame />} />
+            <Route
+              path="/games/ComprensionEmocional/Nivel1"
+              element={<RecognizeEmotionsLevel1 />}
+            />
+            <Route
+              path="/games/ComprensionEmocional/Nivel2"
+              element={<RecognizeEmotionsLevel2 />}
+            />
+            <Route
+              path="/games/RegulacionEmocional/BreathingExercise"
+              element={<BreathingExercise />}
+            />
           </Routes>
         </main>
+
+        {/* Footer siempre al final */}
         <Footer />
       </div>
     </Router>

@@ -11,19 +11,19 @@ const activities = [
     games: [
       {
         name: 'Encuentra el Par',
-        route: '/juegos/memoria', // Ruta de la página de juego
+        route: '/games/AtencionYMemoria/MemoryGame', // Ruta de la página de juego
         locked: false,
         description: 'Encuentra las parejas de cartas iguales',
       },
       {
         name: 'Busca las Diferencias',
-        route: '/juegos/diferencias', // Ruta de la página de juego
+        route: '/games/AtencionYMemoria/diferencias', // Ruta de la página de juego
         locked: true,
         description: 'Encuentra las diferencias entre dos imágenes',
       },
       {
         name: 'Prueba de Concentración',
-        route: '/juegos/concentracion', // Ruta de la página de juego
+        route: '/games/AtencionYMemoria/concentracion', // Ruta de la página de juego
         locked: true,
         description: 'Pon a prueba tu capacidad de concentración',
       },
@@ -37,22 +37,16 @@ const activities = [
     color: 'bg-purple-500',
     games: [
       {
-        name: 'Detective de Emociones',
-        route: '/juegos/emociones', // Ruta del juego de emociones
+        name: 'Nivel 1: Reconocer Emociones 1',
+        route: '/games/ComprensionEmocional/Nivel1', // Ruta del primer nivel
         locked: false,
-        description: 'Identifica las emociones en los rostros',
+        description: 'Identifica emociones básicas en este nivel',
       },
       {
-        name: 'Escenarios Sociales',
-        route: '/juegos/escenarios', // Ruta del juego de escenarios sociales
-        locked: true,
-        description: 'Analiza diferentes situaciones sociales',
-      },
-      {
-        name: 'Rueda de Emociones',
-        route: '/juegos/rueda', // Ruta del juego de la rueda de emociones
-        locked: true,
-        description: 'Explora el espectro completo de las emociones',
+        name: 'Nivel 2: Reconocer Emociones 2',
+        route: '/games/ComprensionEmocional/Nivel2', // Ruta del segundo nivel
+        locked: false,
+        description: 'Identifica emociones avanzadas en este nivel',
       },
     ],
   },
@@ -65,19 +59,19 @@ const activities = [
     games: [
       {
         name: 'Ejercicios de Respiración',
-        route: '/juegos/respiracion', // Ruta de la página de juego
+        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
         locked: false,
         description: 'Aprende técnicas de respiración para calmarte',
       },
       {
         name: 'Viaje de Relajación',
-        route: '/juegos/relajacion', // Ruta de la página de juego
+        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
         locked: true,
         description: 'Realiza un viaje guiado de relajación',
       },
       {
         name: 'Reestructuración de Pensamientos',
-        route: '/juegos/pensamientos', // Ruta de la página de juego
+        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
         locked: true,
         description: 'Aprende a transformar pensamientos negativos',
       },
