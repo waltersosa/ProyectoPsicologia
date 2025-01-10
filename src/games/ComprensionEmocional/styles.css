@@ -1,0 +1,49 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  .referencia {
+    width: 150px;
+    height: 150px;
+    border: 3px solid #333;
+    background-size: cover;
+    background-position: center;
+    margin: 20px auto;
+  }
+  
+  .cuadrados-container {
+    display: grid;
+    grid-template-columns: repeat(2, 150px);
+    grid-gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .cuadrado {
+    width: 150px;
+    height: 150px;
+    border: 3px solid #333;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+  }
+  
+  .instrucciones {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .mensaje-final {
+    margin-top: 30px;
+    font-size: 22px;
+    color: green;
+    font-weight: bold;
+  }
+  
