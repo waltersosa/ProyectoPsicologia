@@ -1,40 +1,36 @@
 {
-  "name": "emotion-regulation-app",
+  "name": "iot-dashboard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@fortawesome/fontawesome-free": "^6.6.0",
-    "@mui/icons-material": "^5.15.1",
-    "@mui/material": "^5.15.1",
-    "avataaars": "^2.0.0",
-    "axios": "^1.6.2",
-    "face-api.js": "^0.22.2",
-    "framer-motion": "^10.18.0",
-    "jspdf": "^2.5.1",
-    "react": "^18.2.0",
-    "react-avatar": "^5.0.3",
-    "react-avatar-editor": "^13.0.2",
-    "react-card-flip": "^1.2.2",
-    "react-confetti": "^6.1.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.3.0",
-    "react-router-dom": "^6.28.0"
+    "lucide-react": "^0.344.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.2",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.4.0",
-    "vite": "^5.0.8"
+    "@eslint/js": "^9.9.1",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^9.9.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.11",
+    "globals": "^15.9.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.3.0",
+    "vite": "^5.4.2"
   }
 }
