@@ -40,13 +40,19 @@ const activities = [
         name: 'Nivel 1: Reconocer Emociones 1',
         route: '/games/ComprensionEmocional/Nivel1', // Ruta del primer nivel
         locked: false,
-        description: 'Identifica emociones básicas en este nivel',
+        description: 'Completa las diferentes expresiones de emociones',
       },
       {
         name: 'Nivel 2: Reconocer Emociones 2',
         route: '/games/ComprensionEmocional/Nivel2', // Ruta del segundo nivel
         locked: false,
-        description: 'Identifica emociones avanzadas en este nivel',
+        description: 'Identifica las emociones usando palabras que las describen',
+      },
+      {
+        name: 'Nivel 3: Reconocer Emociones 3',
+        route: '/games/ComprensionEmocional/Nivel3', // Ruta del segundo nivel
+        locked: false,
+        description: 'Identifica emociones segun el escenario que se presenta',
       },
     ],
   },

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Emociones</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Identificación de Escenarios y Emociones</h1>
+  <p>Selecciona la emoción correcta que cada imagen desea representar.</p>
+
+  <!-- Cuadro grande para la imagen -->
+  <div class="image-container" id="imageContainer">
+    <img id="emotionImage" src="images/felicidad.jpg" alt="Emoción" />
+  </div>
+
+  <!-- Opciones debajo del cuadro -->
+  <div id="optionsContainer">
+    <!-- Las opciones se generarán dinámicamente -->
+  </div>
+
+  <script>
+    // Lista de emociones y sus imágenes
+    const emotions = [
+      { id: "felicidad", src: "images/felicidad.jpg" },
+      { id: "tristeza", src: "images/tristeza.jpg" },
+      { id: "confusion", src: "images/confusion.jpg" },
+      { id: "desagrado", src: "images/desagrado.jpg" },
+      { id: "ira", src: "images/ira.png" },
+      { id: "temor", src: "images/temor.png" }
+    ];
+
+    let currentEmotionIndex = 0; // Índice actual de la emoción
+    const emotionImage = document.getElementById("emotionImage");
+    const optionsContainer = document.getElementById("optionsContainer");
+
+    // Función para mezclar elementos en un array
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Función para cargar la siguiente emoción
+    function loadNextEmotion() {
+      if (currentEmotionIndex < emotions.length) {
+        const currentEmotion = emotions[currentEmotionIndex];
+        emotionImage.src = currentEmotion.src;
+        emotionImage.dataset.id = currentEmotion.id;
+
+        // Generar opciones
+        generateOptions(currentEmotion.id);
+      } else {
+        // Mostrar mensaje de juego terminado
+        alert("¡Felicidades! Has completado el juego.");
+        currentEmotionIndex = 0; // Reiniciar el juego
+        loadNextEmotion();
+      }
+    }
+
+    // Función para generar las opciones dinámicamente
+    function generateOptions(correctId) {
+      // Vaciar las opciones existentes
+      optionsContainer.innerHTML = "";
+
+      // Obtener un array de IDs incorrectas
+      const incorrectOptions = emotions
+        .filter(emotion => emotion.id !== correctId)
+        .map(emotion => emotion.id);
+
+      // Seleccionar dos opciones incorrectas aleatorias
+      const randomIncorrectOptions = shuffleArray(incorrectOptions).slice(0, 2);
+
+      // Combinar la opción correcta con las dos incorrectas
+      const allOptions = shuffleArray([correctId, ...randomIncorrectOptions]);
+
+      // Crear botones para las opciones
+      allOptions.forEach(optionId => {
+        const button = document.createElement("button");
+        button.classList.add("option");
+        button.dataset.option = optionId;
+        button.textContent = optionId.charAt(0).toUpperCase() + optionId.slice(1);
+        button.addEventListener("click", () => handleOptionClick(optionId));
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    // Manejo de clics en las opciones
+    function handleOptionClick(selectedOption) {
+      const currentEmotionId = emotionImage.dataset.id;
+
+      if (selectedOption === currentEmotionId) {
+        currentEmotionIndex++;
+        loadNextEmotion();
+      } else {
+        alert("¡Respuesta incorrecta! Intenta de nuevo.");
+      }
+    }
+
+    // Cargar la primera emoción al inicio
+    loadNextEmotion();
+  </script>
+</body>
+</html>

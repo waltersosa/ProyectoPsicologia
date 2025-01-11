@@ -4,6 +4,7 @@ import Certificates from "./pages/Certificates";
 import MemoryGame from "./games/AtencionYMemoria/MemoryGame";
 import RecognizeEmotionsLevel1 from "./games/ComprensionEmocional/Nivel1/ReconocerEmociones1";
 import RecognizeEmotionsLevel2 from "./games/ComprensionEmocional/Nivel2/ReconocerEmociones2";
+import RecognizeEmotionsLevel3 from "./games/ComprensionEmocional/Nivel3/ReconocerEmociones3";
 import BreathingExercise from "./games/RegulacionEmocional/BreathingExercise";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -37,6 +38,10 @@ function App() {
             <Route
               path="/games/ComprensionEmocional/Nivel2"
               element={<RecognizeEmotionsLevel2 />}
+            />
+              <Route
+              path="/games/ComprensionEmocional/Nivel3"
+              element={<RecognizeEmotionsLevel3 />}
             />
             <Route
               path="/games/RegulacionEmocional/BreathingExercise"
