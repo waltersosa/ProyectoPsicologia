@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { FaHome, FaUserAlt, FaAward, FaImage } from 'react-icons/fa'; // Añadido FaImage para el Avatar
 
 function Navbar() {
@@ -14,7 +13,7 @@ function Navbar() {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-2xl mr-2">🌈</span>
-              <span className="font-bold text-xl text-gray-800">EmoRegula</span>
+              <span className="font-bold text-xl text-gray-800">Emotion Play</span>
             </Link>
           </div>
 
