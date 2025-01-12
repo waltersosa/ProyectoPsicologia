@@ -75,7 +75,7 @@ function ActivityCard({ activity, index, onGameComplete }) {
                   </p>
                 </div>
 
-                {/* Botón "Jugar" */}
+                {/* Botón "Ver" */}
                 <button
                   onClick={() => handlePlayGame(game)}
                   className={`px-4 py-2 rounded-lg flex items-center ${
@@ -86,7 +86,7 @@ function ActivityCard({ activity, index, onGameComplete }) {
                   disabled={game.locked}
                 >
                   <PlayArrowIcon fontSize="small" className="mr-1" />
-                  Jugar
+                  Ver
                 </button>
               </div>
             </div>

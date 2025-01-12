@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Info } from "lucide-react";
 
 const estados = [
   { nombre: "Feliz", instruccion: "La felicidad es una emoción de alegría y bienestar." },
@@ -10,11 +10,7 @@ const estados = [
   { nombre: "Confundido", instruccion: "La confusión aparece cuando no entendemos algo completamente." },
 ];
 
-const imagenReferencia = (estado) => `/src/games/ComprensionEmocional/Nivel1/Images/${estado}.jpeg`;
-const imagenCuadrado = (estado, cuadrado) =>
-  `/src/games/ComprensionEmocional/Nivel1/Images/${estado[0]}${cuadrado}.jpeg`;
-
-const ReconocerEmociones1 = () => {
+function ReconocerEmociones1() {
   const [estadoReferencia, setEstadoReferencia] = useState(0);
   const [cuadrados, setCuadrados] = useState(
     Array.from({ length: 4 }, (_, index) => index % estados.length)
@@ -22,19 +18,20 @@ const ReconocerEmociones1 = () => {
   const [juegoTerminado, setJuegoTerminado] = useState(false);
   const [contador, setContador] = useState(0);
   const [tiempo, setTiempo] = useState(0);
-  const navigate = useNavigate();
+  const [juegoIniciado, setJuegoIniciado] = useState(false);
 
   useEffect(() => {
     let timer;
-    if (!juegoTerminado) {
+    if (juegoIniciado && !juegoTerminado) {
       timer = setInterval(() => setTiempo((prev) => prev + 1), 1000);
-    } else {
-      clearInterval(timer);
     }
     return () => clearInterval(timer);
-  }, [juegoTerminado]);
+  }, [juegoIniciado, juegoTerminado]);
+
+  const iniciarJuego = () => setJuegoIniciado(true);
 
   const verificarEstados = () => {
+    if (!juegoIniciado) return;
     const todosCoinciden = cuadrados.every(
       (estado) => estados[estado].nombre === estados[estadoReferencia].nombre
     );
@@ -46,6 +43,7 @@ const ReconocerEmociones1 = () => {
         desordenarCuadrados();
       } else {
         setJuegoTerminado(true);
+        setJuegoIniciado(false);
       }
     }
   };
@@ -55,6 +53,8 @@ const ReconocerEmociones1 = () => {
   };
 
   const cambiarEstado = (index) => {
+    if (!juegoIniciado) return;
+
     setCuadrados((prevCuadrados) =>
       prevCuadrados.map((estado, i) =>
         i === index ? (estado + 1) % estados.length : estado
@@ -67,105 +67,118 @@ const ReconocerEmociones1 = () => {
     setEstadoReferencia(0);
     setCuadrados(Array.from({ length: 4 }, (_, index) => index % estados.length));
     setJuegoTerminado(false);
+    setJuegoIniciado(false);
     setContador(0);
     setTiempo(0);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      {/* Título principal */}
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">
-        Reconocimiento de Emociones Básicas
-      </h1>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-purple-50">
+      {/* Contenedor principal con menos padding superior */}
+      <div className="flex-grow container mx-auto px-6 pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Columna de información */}
+          <div className="bg-white rounded-2xl shadow-xl p-4 lg:p-6">
+            <div className="space-y-4">
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <Info className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500" />
+                Reconocimiento de Emociones
+              </h1>
 
-      {/* Cronómetro debajo del título */}
-      <div className="flex justify-center items-center mb-6">
-        <div className="text-center">
-          <p className="text-lg font-semibold text-blue-700">Tiempo</p>
-          <p className="text-2xl font-bold text-blue-500">{tiempo} s</p>
-        </div>
-      </div>
-
-      {/* Instrucción del estado actual */}
-      <div className="text-lg text-gray-700 mb-6 text-center">
-        {juegoTerminado
-          ? "¡Juego terminado! 🎉"
-          : estados[estadoReferencia].instruccion}
-      </div>
-
-      {/* Estadísticas en línea */}
-      <div className="flex justify-center items-center space-x-8 mb-8">
-        <div className="flex items-center text-xl font-semibold text-gray-700">
-          <span>Caras completadas:</span>
-          <span className="ml-2 text-green-600 font-bold">{contador}</span>
-        </div>
-      </div>
-
-      {!juegoTerminado && (
-        <>
-          {/* Imagen de referencia */}
-          <div
-            className="w-40 h-40 border-4 border-gray-400 rounded-lg bg-center bg-cover mb-6"
-            style={{
-              backgroundImage: `url('${imagenReferencia(estados[estadoReferencia].nombre)}')`,
-            }}
-          ></div>
-
-          {/* Cuadrados */}
-          <div className="grid grid-cols-2 gap-6">
-            {cuadrados.map((estado, index) => (
-              <div
-                key={index}
-                className="w-40 h-40 border-4 border-gray-400 rounded-lg bg-center bg-cover cursor-pointer hover:scale-105 transform transition"
-                style={{
-                  backgroundImage: `url('${imagenCuadrado(
-                    estados[estado].nombre,
-                    index + 1
-                  )}')`,
-                }}
-                onClick={() => cambiarEstado(index)}
-              ></div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {juegoTerminado && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg text-center shadow-xl">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">¡Felicidades! 🎉</h2>
-            <p className="text-lg text-gray-700 mb-4">
-              Has completado todas las caras correctamente.
-            </p>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="flex flex-col items-center">
-                <p className="text-gray-600 text-lg">Caras completadas</p>
-                <p className="text-2xl text-green-600 font-bold">{contador}</p>
+              <div className="bg-blue-50 rounded-xl p-4 lg:p-5">
+                <h2 className="text-base lg:text-lg font-semibold text-blue-800 mb-3">¿Cómo jugar?</h2>
+                <ul className="space-y-1 text-sm lg:text-base text-gray-700">
+                  <li>1. Observa la emoción de referencia</li>
+                  <li>2. Haz clic en los cuadrados para cambiar las emociones</li>
+                  <li>3. Haz coincidir todas las emociones con la referencia</li>
+                  <li>4. ¡Completa todas las emociones lo más rápido posible!</li>
+                </ul>
               </div>
-              <div className="flex flex-col items-center">
-                <p className="text-gray-600 text-lg">Tiempo total</p>
-                <p className="text-2xl text-blue-600 font-bold">{tiempo} s</p>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-green-50 rounded-xl p-3">
+                  <p className="text-sm text-green-600 font-medium">Caras completadas</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-green-700">{contador}</p>
+                </div>
+                <div className="bg-purple-50 rounded-xl p-3">
+                  <p className="text-sm text-purple-600 font-medium">Tiempo</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-purple-700">{tiempo}s</p>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-center gap-6">
+
+              <div className="bg-yellow-50 rounded-xl p-4">
+                <h3 className="text-base font-semibold text-yellow-800 mb-2">Instrucción actual</h3>
+                <p className="text-gray-700">{estados[estadoReferencia].instruccion}</p>
+              </div>
+
               <button
-                className="px-6 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600"
-                onClick={reiniciarJuego}
+                onClick={iniciarJuego}
+                disabled={juegoIniciado || juegoTerminado}
+                className={`w-full py-2 px-4 rounded-lg text-white font-semibold shadow-md transition-all ${
+                  juegoIniciado
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
+                }`}
               >
-                Jugar otra vez
-              </button>
-              <button
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
-                onClick={() => navigate("/")}
-              >
-                Regresar al inicio
+                Comenzar a jugar
               </button>
             </div>
           </div>
+
+          {/* Columna del juego */}
+          <div className="bg-white rounded-2xl shadow-xl p-4 lg:p-6">
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+              {!juegoTerminado ? (
+                <>
+                  <div className="mb-6 text-center">
+                    <h3 className="text-base font-medium text-gray-700 mb-2">Emoción de referencia</h3>
+                    <div className="w-36 h-36 lg:w-40 lg:h-40 rounded-xl overflow-hidden shadow-lg">
+                      <img
+                        src={`/src/games/ComprensionEmocional/Nivel1/Images/${estados[estadoReferencia].nombre}.jpeg`}
+                        alt="Emoción de referencia"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {cuadrados.map((estado, index) => (
+                      <div
+                        key={index}
+                        onClick={() => cambiarEstado(index)}
+                        className="w-28 h-28 lg:w-36 lg:h-36 rounded-xl overflow-hidden shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300"
+                      >
+                        <img
+                          src={`/src/games/ComprensionEmocional/Nivel1/Images/${estados[estado].nombre[0]}${index + 1}.jpeg`}
+                          alt={`Cuadrado ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center p-6">
+                  <h2 className="text-2xl font-bold text-green-600 mb-4">¡Felicidades! 🎉</h2>
+                  <p className="text-lg text-gray-700 mb-6">Has completado todas las emociones correctamente</p>
+                  <button
+                    onClick={reiniciarJuego}
+                    className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300"
+                  >
+                    Jugar otra vez
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+      </div>
+
+      <footer className="bg-gray-100 py-3 text-center text-gray-600 text-sm">
+        © 2025 Reconocer Emociones. Todos los derechos reservados.
+      </footer>
     </div>
   );
-};
+}
 
 export default ReconocerEmociones1;
