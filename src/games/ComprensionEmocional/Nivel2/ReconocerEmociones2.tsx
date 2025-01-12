@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
+import { useNavigate } from "react-router-dom";
 
 const descriptions = {
   Nostalgia: "La melancolía que experimentamos al recordar el pasado.",
@@ -16,12 +16,12 @@ function ReconocerEmociones2() {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [remainingWords, setRemainingWords] = useState<string[]>([]);
-  const navigate = useNavigate(); // Hook para redirigir al inicio
+  const navigate = useNavigate();
 
   const emotions = Object.keys(descriptions);
 
   const imagePath = (emotion: string) =>
-    `/src/games/ComprensionEmocional/Nivel2/images/${emotion.toLowerCase()}.jpg`;
+    new URL(`./images/${emotion.toLowerCase()}.jpg`, import.meta.url).href;
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -224,7 +224,7 @@ function ReconocerEmociones2() {
               Jugar otra vez
             </button>
             <button
-              onClick={() => navigate("/")} // Navegar al inicio
+              onClick={() => navigate("/")}
               className="px-4 py-2 bg-gray-500 text-white rounded-lg shadow ml-4 hover:bg-gray-600 transition-all"
             >
               Volver al inicio

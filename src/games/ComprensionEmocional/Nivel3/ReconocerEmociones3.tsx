@@ -34,6 +34,9 @@ const ReconocerEmociones3: React.FC = () => {
   const [results, setResults] = useState<{ id: string; correct: boolean }[]>([]);
   const navigate = useNavigate();
 
+  const imagePath = (emotion: string) =>
+    new URL(`./images/${emotion.toLowerCase()}.jpg`, import.meta.url).href;
+
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
     if (gameStarted && !isGameComplete) {
@@ -104,116 +107,102 @@ const ReconocerEmociones3: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col">
       <div className="container mx-auto px-6 py-8 flex-grow">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Contenedor de Descripción */}
-          <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 flex flex-col justify-between h-[500px]">
-            <div className="space-y-4">
-              <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                <Info className="w-6 h-6 text-blue-500" />
-                Identificación de Escenarios y Emociones
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Columna de información */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 h-[500px] overflow-hidden">
+            <div className="space-y-6">
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center gap-3">
+                <Info className="w-6 h-6 lg:w-8 lg:h-8 text-blue-500" />
+                Reconocimiento de Emociones
               </h1>
 
-              <div className="bg-blue-50 rounded-lg p-4">
-                <h2 className="text-lg font-semibold text-blue-800 mb-3">
+              <div className="bg-blue-50 rounded-xl p-5 lg:p-6">
+                <h2 className="text-lg lg:text-xl font-semibold text-blue-800 mb-4">
                   ¿Cómo jugar?
                 </h2>
-                <ul className="text-sm text-gray-700 space-y-2">
-                  <li>1. Observa las imágenes mostradas.</li>
-                  <li>2. Selecciona la emoción correcta entre las opciones.</li>
-                  <li>3. Presiona "Comenzar juego" para iniciar.</li>
-                  <li>4. Completa todas las imágenes lo más rápido posible.</li>
+                <ul className="space-y-2 text-sm lg:text-base text-gray-700">
+                  <li>1. Observa la emoción de referencia</li>
+                  <li>2. Haz clic en las opciones para seleccionar la emoción correcta</li>
+                  <li>3. Completa todas las emociones lo más rápido posible</li>
                 </ul>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-50 rounded-lg p-4 text-center">
-                  <p className="text-sm text-green-600 font-medium">Tiempo</p>
-                  <p className="text-xl font-bold text-green-700">{time} s</p>
+                <div className="bg-green-50 rounded-xl p-4">
+                  <p className="text-sm text-green-600 font-medium">Emociones restantes</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-green-700">{emotions.length - currentEmotionIndex}</p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-4 text-center">
-                  <p className="text-sm text-purple-600 font-medium">
-                    Imágenes restantes
-                  </p>
-                  <p className="text-xl font-bold text-purple-700">
-                    {emotions.length - currentEmotionIndex}
-                  </p>
+                <div className="bg-purple-50 rounded-xl p-4">
+                  <p className="text-sm text-purple-600 font-medium">Tiempo</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-purple-700">{time}s</p>
                 </div>
               </div>
+
+              <button
+                onClick={startGame}
+                disabled={gameStarted}
+                className={`w-full py-3 px-4 rounded-xl text-white font-semibold shadow-md transition-all ${
+                  gameStarted ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                }`}
+              >
+                {gameStarted ? "Juego en progreso" : "Comenzar a jugar"}
+              </button>
             </div>
-            <button
-              onClick={startGame}
-              className="w-full py-3 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
-            >
-              Comenzar juego
-            </button>
           </div>
 
-          {/* Contenedor del Juego */}
-          <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 flex flex-col h-[500px]">
-            <div className="flex justify-center items-center mb-6">
-              <div className="w-72 h-72 border-2 border-gray-300 rounded-lg shadow-md">
-                <img
-                  src={emotions[currentEmotionIndex]?.src}
-                  alt="Emoción"
-                  className="w-full h-full object-cover rounded-lg"
-                />
+          {/* Columna del juego */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 flex flex-col h-[600px] relative">
+            <div className="bg-yellow-50 rounded-xl p-4 sticky top-0 z-10">
+              <h2 className="text-lg font-bold text-gray-800 text-center mb-4">Palabras disponibles</h2>
+              <div className="flex flex-wrap gap-4 justify-center">
+                {emotions.map((emotion, index) => (
+                  <span
+                    key={index}
+                    className="word px-4 py-2 bg-gradient-to-br from-yellow-200 to-yellow-100 border-2 border-yellow-400 text-gray-800 font-semibold rounded-xl shadow-md cursor-grab hover:shadow-lg transition-all active:cursor-grabbing"
+                    draggable={gameStarted}
+                    data-word={emotion}
+                  >
+                    {emotion}
+                  </span>
+                ))}
               </div>
             </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              {options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleOptionClick(option)}
-                  disabled={!gameStarted}
-                  className={`px-3 py-2 rounded-lg shadow-md transition ${
-                    gameStarted
-                      ? "bg-blue-500 text-white hover:bg-blue-600"
-                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </button>
-              ))}
+            <div className="mt-4 flex-grow overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4">
+                {emotions.map((emotion, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center space-y-3 bg-white p-4 rounded-lg shadow-md"
+                    data-emotion={emotion}
+                  >
+                    <div className="w-full h-40 overflow-hidden rounded-lg">
+                      <img
+                        src={imagePath(emotion)}
+                        alt={emotion}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div
+                      className="dropzone w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 text-center bg-gray-50 transition-colors hover:bg-gray-100"
+                    >
+                      Arrastra aquí
+                    </div>
+                    <p className="description text-sm text-gray-600 text-center h-12"></p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mensaje de Juego Completado */}
       {isGameComplete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div className="bg-white p-8 rounded-xl shadow-xl text-center">
             <h2 className="text-4xl font-bold mb-4">¡Felicidades! 🎉</h2>
-            <p className="text-lg text-gray-800 mb-6">
-              Has completado el juego en <strong>{time} segundos</strong>.
-            </p>
-            <ul className="list-disc text-left text-gray-700 pl-6">
-              {results.map((result, index) => (
-                <li
-                  key={index}
-                  className={`${
-                    result.correct ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {result.correct ? `Correcto: ${result.id}` : `Incorrecto: ${result.id}`}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6 flex justify-center gap-4">
-              <button
-                onClick={restartGame}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
-              >
-                Jugar otra vez
-              </button>
-              <button
-                onClick={() => navigate("/")}
-                className="px-6 py-2 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition"
-              >
-                Regresar al inicio
-              </button>
-            </div>
+            <p className="mb-6">Has completado el juego en <strong>{time} segundos</strong>.</p>
+            <button onClick={restartGame} className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-all">Jugar otra vez</button>
+            <button onClick={() => navigate("/")} className="px-4 py-2 bg-gray-500 text-white rounded-lg shadow ml-4 hover:bg-gray-600 transition-all">Volver al inicio</button>
           </div>
         </div>
       )}
@@ -223,6 +212,6 @@ const ReconocerEmociones3: React.FC = () => {
       </footer>
     </div>
   );
-};
+}
 
 export default ReconocerEmociones3;
