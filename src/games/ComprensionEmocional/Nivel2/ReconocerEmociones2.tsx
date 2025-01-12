@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
@@ -36,7 +36,7 @@ function ReconocerEmociones2() {
       setRemainingWords(emotions);
       setupDragAndDrop();
     }
-  }, [gameStarted]);
+  }, [gameStarted, emotions]);
 
   const setupDragAndDrop = () => {
     const words = document.querySelectorAll(".word");

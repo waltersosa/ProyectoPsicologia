@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Info } from "lucide-react";
 
@@ -35,22 +35,22 @@ const ReconocerEmociones3: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout | null = null;
     if (gameStarted && !isGameComplete) {
       timer = setInterval(() => setTime((prev) => prev + 1), 1000);
     } else {
-      clearInterval(timer);
+      if (timer) {
+        clearInterval(timer);
+      }
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [gameStarted, isGameComplete]);
 
-  useEffect(() => {
-    if (gameStarted) {
-      loadNextEmotion();
-    }
-  }, [currentEmotionIndex, gameStarted]);
-
-  const loadNextEmotion = () => {
+  const loadNextEmotion = useCallback(() => {
     if (currentEmotionIndex < emotions.length) {
       const currentEmotion = emotions[currentEmotionIndex];
       const incorrectOptions = emotions
@@ -61,7 +61,13 @@ const ReconocerEmociones3: React.FC = () => {
     } else {
       setIsGameComplete(true);
     }
-  };
+  }, [currentEmotionIndex]);
+
+  useEffect(() => {
+    if (gameStarted) {
+      loadNextEmotion();
+    }
+  }, [currentEmotionIndex, gameStarted, loadNextEmotion]);
 
   const handleOptionClick = (selectedOption: string) => {
     if (!gameStarted) return;

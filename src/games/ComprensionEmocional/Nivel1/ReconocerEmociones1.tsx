@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 
 const estados = [
@@ -21,11 +21,15 @@ function ReconocerEmociones1() {
   const [juegoIniciado, setJuegoIniciado] = useState(false);
 
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout | null = null;
     if (juegoIniciado && !juegoTerminado) {
       timer = setInterval(() => setTiempo((prev) => prev + 1), 1000);
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [juegoIniciado, juegoTerminado]);
 
   const iniciarJuego = () => setJuegoIniciado(true);
@@ -52,7 +56,7 @@ function ReconocerEmociones1() {
     setCuadrados(cuadrados.map(() => Math.floor(Math.random() * estados.length)));
   };
 
-  const cambiarEstado = (index) => {
+  const cambiarEstado = (index: number) => {
     if (!juegoIniciado) return;
 
     setCuadrados((prevCuadrados) =>
