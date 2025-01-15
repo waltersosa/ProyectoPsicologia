@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-function Login() {
+function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -25,8 +25,9 @@ function Login() {
       return;
     }
     
-    // Aquí irá la lógica de autenticación
-    navigate('/'); // Redirige al home después del login
+    // Llamar a onLogin cuando la autenticación sea exitosa
+    onLogin();
+    navigate('/');
   };
 
   const handleChange = (e) => {
