@@ -10,21 +10,26 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Perfil from "./pages/Perfil";
 import Avatar from "./pages/Avatar";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
-        {/* Navbar siempre en la parte superior */}
-        <Navbar />
+        {/* Navbar solo se muestra si no estamos en la página de login */}
+        <Routes>
+          <Route path="/login" element={null} />
+          <Route path="*" element={<Navbar />} />
+        </Routes>
 
-        {/* Contenido principal crece dinámicamente */}
-        <main className="flex-grow container mx-auto px-4 py-8">
+        {/* Contenido principal */}
+        <main className="flex-grow">
           <Routes>
-            {/* Página principal */}
+            {/* Ruta de login */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Rutas existentes */}
             <Route path="/" element={<Home />} />
-
-            {/* Rutas generales */}
             <Route path="/certificados" element={<Certificates />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/avatar" element={<Avatar />} />
@@ -50,8 +55,11 @@ function App() {
           </Routes>
         </main>
 
-        {/* Footer siempre al final */}
-        <Footer />
+        {/* Footer solo se muestra si no estamos en la página de login */}
+        <Routes>
+          <Route path="/login" element={null} />
+          <Route path="*" element={<Footer />} />
+        </Routes>
       </div>
     </Router>
   );
