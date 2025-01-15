@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import authService from '../services/authService';
 
 function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +11,8 @@ function Login({ onLogin }) {
     password: '',
   });
   const [emailError, setEmailError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
@@ -17,17 +20,34 @@ function Login({ onLogin }) {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateEmail(formData.email)) {
       setEmailError('Por favor, utiliza un correo institucional (@pucese.edu.ec)');
       return;
     }
+
+    setLoading(true);
+    setError('');
     
-    // Llamar a onLogin cuando la autenticación sea exitosa
-    onLogin();
-    navigate('/');
+    try {
+      console.log('Intentando login con:', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      const response = await authService.login(formData.email, formData.password);
+      console.log('Respuesta del servidor:', response);
+      
+      onLogin(response.user);
+      navigate('/');
+    } catch (error) {
+      console.error('Error completo:', error);
+      setError(error.message || 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -138,9 +158,12 @@ function Login({ onLogin }) {
           {/* Botón de inicio de sesión */}
           <button
             type="submit"
-            className="w-full py-3 px-4 border border-transparent rounded-xl shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            disabled={loading}
+            className={`w-full py-3 px-4 border border-transparent rounded-xl shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            Iniciar sesión
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
 
           {/* Enlace de registro */}
@@ -151,6 +174,13 @@ function Login({ onLogin }) {
             </button>
           </div>
         </form>
+
+        {error && (
+          <div className="mt-2 text-center text-sm text-red-600">
+            <AlertCircle className="inline-block w-4 h-4 mr-1" />
+            {error}
+          </div>
+        )}
       </motion.div>
     </div>
   );

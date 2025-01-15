@@ -45,6 +45,48 @@ const userModel = {
     } catch (error) {
       throw error;
     }
+  },
+
+  async createAdmin(userData) {
+    const { name, email, password } = userData;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const query = `
+      INSERT INTO users (name, email, password, role)
+      VALUES ($1, $2, $3, 'admin')
+      RETURNING id, name, email, role;
+    `;
+
+    try {
+      const result = await pool.query(query, [name, email, hashedPassword]);
+      return result.rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async findAll() {
+    const query = `
+      SELECT id, name, email, role, avatar, created_at, updated_at 
+      FROM users 
+      ORDER BY created_at DESC
+    `;
+    try {
+      const result = await pool.query(query);
+      return result.rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async delete(userId) {
+    const query = 'DELETE FROM users WHERE id = $1';
+    try {
+      await pool.query(query, [userId]);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

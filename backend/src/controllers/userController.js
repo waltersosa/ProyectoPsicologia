@@ -52,10 +52,19 @@ const userController = {
   async login(req, res) {
     try {
       const { email, password } = req.body;
+      console.log('📧 Intento de login con email:', email);
 
       // Buscar usuario
       const user = await userModel.findByEmail(email);
+      console.log('👤 Usuario encontrado:', {
+        found: !!user,
+        id: user?.id,
+        email: user?.email,
+        role: user?.role
+      });
+
       if (!user) {
+        console.log('❌ Usuario no encontrado');
         return res.status(401).json({
           error: 'Credenciales inválidas'
         });
@@ -63,7 +72,12 @@ const userController = {
 
       // Verificar contraseña
       const isValidPassword = await bcrypt.compare(password, user.password);
+      console.log('🔑 Contraseña válida:', isValidPassword);
+      console.log('🔐 Contraseña proporcionada:', password);
+      console.log('🗝️ Hash almacenado:', user.password);
+
       if (!isValidPassword) {
+        console.log('❌ Contraseña incorrecta');
         return res.status(401).json({
           error: 'Credenciales inválidas'
         });
@@ -76,17 +90,19 @@ const userController = {
         { expiresIn: '24h' }
       );
 
+      console.log('✅ Login exitoso');
       res.json({
         user: {
           id: user.id,
           name: user.name,
           email: user.email,
-          avatar: user.avatar
+          avatar: user.avatar,
+          role: user.role
         },
         token
       });
     } catch (error) {
-      console.error('Error en login:', error);
+      console.error('❌ Error detallado:', error);
       res.status(500).json({
         error: 'Error al iniciar sesión'
       });
@@ -107,6 +123,31 @@ const userController = {
       console.error('Error al actualizar perfil:', error);
       res.status(500).json({
         error: 'Error al actualizar el perfil'
+      });
+    }
+  },
+
+  async getAllUsers(req, res) {
+    try {
+      const users = await userModel.findAll();
+      res.json(users);
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      res.status(500).json({
+        error: 'Error al obtener la lista de usuarios'
+      });
+    }
+  },
+
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+      await userModel.delete(id);
+      res.json({ message: 'Usuario eliminado exitosamente' });
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      res.status(500).json({
+        error: 'Error al eliminar el usuario'
       });
     }
   }
