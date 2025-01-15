@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
+import { useNavigate } from "react-router-dom";
+import { getApiUrl } from '../../../services/config';
 
 const descriptions = {
   Nostalgia: "La melancolía que experimentamos al recordar el pasado.",
@@ -16,7 +17,7 @@ function ReconocerEmociones2() {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [remainingWords, setRemainingWords] = useState<string[]>([]);
-  const navigate = useNavigate(); // Hook para redirigir al inicio
+  const navigate = useNavigate();
 
   const emotions = Object.keys(descriptions);
 
@@ -106,6 +107,67 @@ function ReconocerEmociones2() {
     setGameStarted(false);
     setRemainingWords([]);
   };
+
+  const irSiguienteNivel = () => {
+    navigate('/games/ComprensionEmocional/Nivel3');
+  };
+
+  const verificarEstados = async () => {
+    if (!gameStarted) return;
+
+    if (gameCompleted) {
+      setGameCompleted(false);
+      setGameStarted(false);
+      
+      try {
+        const response = await fetch('/api/progress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            gameCategory: 'Comprensión Emocional',
+            level: 2
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al actualizar progreso');
+        }
+      } catch (error) {
+        console.error('Error al actualizar progreso:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (gameCompleted) {
+      const updateProgress = async () => {
+        try {
+          const response = await fetch(getApiUrl('/api/progress'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+              gameCategory: 'Comprensión Emocional',
+              level: 2
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Error al actualizar progreso');
+          }
+        } catch (error) {
+          console.error('Error al actualizar progreso:', error);
+        }
+      };
+
+      updateProgress();
+    }
+  }, [gameCompleted]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 relative flex flex-col">
@@ -224,7 +286,13 @@ function ReconocerEmociones2() {
               Jugar otra vez
             </button>
             <button
-              onClick={() => navigate("/")} // Navegar al inicio
+              onClick={irSiguienteNivel}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition-all"
+            >
+              Pasar al siguiente nivel
+            </button>
+            <button
+              onClick={() => navigate("/")}
               className="px-4 py-2 bg-gray-500 text-white rounded-lg shadow ml-4 hover:bg-gray-600 transition-all"
             >
               Volver al inicio

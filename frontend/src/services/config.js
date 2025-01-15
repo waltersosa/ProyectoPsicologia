@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5000';
+
+export const getApiUrl = (endpoint) => `${API_URL}${endpoint}`;
 
 export const apiConfig = {
   baseURL: API_URL,

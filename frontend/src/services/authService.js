@@ -1,12 +1,14 @@
-import { apiConfig, getAuthHeaders } from './config';
+import { apiConfig, getAuthHeaders, getApiUrl } from './config';
 
-class AuthService {
+const authService = {
   async login(email, password) {
     try {
-      const response = await fetch(`${apiConfig.baseURL}/users/login`, {
+      const response = await fetch(getApiUrl('/api/users/login'), {
         method: 'POST',
-        headers: apiConfig.headers,
-        body: JSON.stringify({ email, password }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
@@ -15,10 +17,9 @@ class AuthService {
         throw new Error(data.error || 'Error en el inicio de sesión');
       }
 
-      // Guardar el token y los datos del usuario en localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('userId', data.user.id);
       }
 
       return data;
@@ -26,7 +27,7 @@ class AuthService {
       console.error('Error en login:', error);
       throw error;
     }
-  }
+  },
 
   async register(userData) {
     try {
@@ -52,7 +53,7 @@ class AuthService {
       console.error('Error en registro:', error);
       throw error;
     }
-  }
+  },
 
   async updateProfile(userData) {
     try {
@@ -73,21 +74,22 @@ class AuthService {
       console.error('Error al actualizar perfil:', error);
       throw error;
     }
-  }
+  },
 
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  }
+    localStorage.removeItem('userId');
+  },
 
   isAuthenticated() {
     return !!localStorage.getItem('token');
-  }
+  },
 
   isAdmin() {
     const user = JSON.parse(localStorage.getItem('user'));
     return user && user.role === 'admin';
   }
-}
+};
 
-export default new AuthService(); 
+export default authService; 

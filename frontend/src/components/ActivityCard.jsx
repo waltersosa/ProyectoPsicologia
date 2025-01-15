@@ -6,31 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 function ActivityCard({ activity, index, onGameComplete }) {
   const [lockedMessage, setLockedMessage] = useState(null);
-  const navigate = useNavigate(); // Para redirigir a las rutas de los juegos
+  const navigate = useNavigate();
 
   const handlePlayGame = (game) => {
     if (game.locked) {
-      setLockedMessage("¡Completa el primer juego para desbloquear este nivel!");
+      setLockedMessage("¡Completa el nivel anterior para desbloquear este!");
       return;
     }
-
-    // Redirigir a la ruta del juego
-    navigate(game.route); // Redirige según la ruta del juego
-  };
-
-  const handleGameComplete = (gameId) => {
-    // Desbloquear el siguiente juego
-    const newActivity = { ...activity };
-    const gameIndex = newActivity.games.findIndex((game) => game.id === gameId);
-    if (gameIndex >= 0 && gameIndex < newActivity.games.length - 1) {
-      newActivity.games[gameIndex + 1].locked = false; // Desbloquear siguiente juego
-    }
-
-    // Notificar a la actividad que el juego ha sido completado
-    onGameComplete(newActivity);
-
-    // Redirigir al inicio después de completar un juego
-    navigate("/"); // Redirige a la página de inicio
+    navigate(game.route);
   };
 
   return (
@@ -57,7 +40,7 @@ function ActivityCard({ activity, index, onGameComplete }) {
         <div className="space-y-3">
           {activity.games.map((game, i) => (
             <div
-              key={`${activity.id}-game-${i}`} // Clave única combinando el id de la actividad y el índice
+              key={`${activity.id}-game-${i}`}
               className={`bg-gray-50 p-4 rounded-lg ${
                 game.locked ? "opacity-75" : ""
               }`}

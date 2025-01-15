@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Certificates from "./pages/Certificates";
 import MemoryGame from "./games/AtencionYMemoria/MemoryGame";
@@ -12,9 +12,20 @@ import Footer from "./components/Footer";
 import Perfil from "./pages/Perfil";
 import Avatar from "./pages/Avatar";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import authService from './services/authService';
+import GameAccess from './components/GameAccess';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+
+  const handleLogin = (user) => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
   // Componente para proteger rutas
   const ProtectedRoute = ({ children }) => {
@@ -28,12 +39,36 @@ function App() {
     <Router>
       <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
         {/* Navbar solo se muestra si estamos autenticados */}
-        {isAuthenticated && <Navbar />}
+        {isAuthenticated && <Navbar onLogout={handleLogout} />}
 
         {/* Contenido principal */}
         <main className="flex-grow">
           <Routes>
-            {/* Redirigir la ruta raíz al login si no está autenticado */}
+            {/* Ruta de login */}
+            <Route
+              path="/login"
+              element={
+                !isAuthenticated ? (
+                  <Login onLogin={handleLogin} />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+
+            {/* Ruta de registro */}
+            <Route
+              path="/register"
+              element={
+                !isAuthenticated ? (
+                  <Register />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+
+            {/* Rutas protegidas */}
             <Route
               path="/"
               element={
@@ -44,16 +79,6 @@ function App() {
                 )
               }
             />
-
-            {/* Ruta de login */}
-            <Route
-              path="/login"
-              element={
-                <Login onLogin={() => setIsAuthenticated(true)} />
-              }
-            />
-
-            {/* Rutas protegidas */}
             <Route
               path="/certificados"
               element={

@@ -5,9 +5,13 @@ const pool = require('./config/database');
 
 const app = express();
 const userRoutes = require('./routes/userRoutes');
+const progressRoutes = require('./routes/progressRoutes');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // URL de tu frontend
+  credentials: true
+}));
 app.use(express.json());
 
 // Ruta de prueba
@@ -28,8 +32,9 @@ app.get('/api/test', async (req, res) => {
 
 // Rutas
 app.use('/api/users', userRoutes);
+app.use('/api/progress', progressRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 }); 

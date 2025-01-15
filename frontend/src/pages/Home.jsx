@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import ActivityCard from '../components/ActivityCard';
+import { useState, useEffect } from 'react';
+import { getApiUrl } from '../services/config';
 
-const activities = [
+// Renombramos la constante inicial para evitar conflictos
+const initialActivities = [
   {
     id: 1,
     title: 'Atención y Memoria',
@@ -45,13 +48,13 @@ const activities = [
       {
         name: 'Nivel 2: Reconocer Emociones 2',
         route: '/games/ComprensionEmocional/Nivel2', // Ruta del segundo nivel
-        locked: false,
+        locked: true,
         description: 'Identifica las emociones usando palabras que las describen',
       },
       {
         name: 'Nivel 3: Reconocer Emociones 3',
         route: '/games/ComprensionEmocional/Nivel3', // Ruta del segundo nivel
-        locked: false,
+        locked: true,
         description: 'Identifica emociones segun el escenario que se presenta',
       },
     ],
@@ -86,23 +89,72 @@ const activities = [
 ];
 
 function Home() {
-  // Función para manejar cuando un juego se completa y desbloquear el siguiente
-  const handleGameComplete = (activityId, gameId) => {
-    const updatedActivities = activities.map((activity) => {
-      if (activity.id === activityId) {
-        const updatedGames = activity.games.map((game, index) => {
-          if (index === gameId && index < activity.games.length - 1) {
-            activity.games[index + 1].locked = false; // Desbloquea el siguiente juego
-          }
-          return game;
-        });
-        return { ...activity, games: updatedGames };
-      }
-      return activity;
-    });
+  // Usamos initialActivities como valor inicial del estado
+  const [activities, setActivities] = useState(initialActivities);
 
-    // Actualizamos el estado de las actividades en la página, aquí deberías implementar un estado si lo necesitas.
-    console.log(updatedActivities);
+  const fetchProgress = async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/progress'), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const progress = await response.json();
+        console.log('Progreso recibido:', progress); // Log para debug
+        
+        const updatedActivities = initialActivities.map(activity => {
+          if (activity.title === 'Comprensión Emocional') {
+            const categoryProgress = progress.find(p => p.game_category === 'Comprensión Emocional');
+            const levelCompleted = categoryProgress ? categoryProgress.level_completed : 0;
+            
+            console.log('Nivel completado:', levelCompleted); // Log para debug
+            
+            return {
+              ...activity,
+              games: activity.games.map((game, index) => ({
+                ...game,
+                locked: index > levelCompleted
+              }))
+            };
+          }
+          return activity;
+        });
+
+        setActivities(updatedActivities);
+      }
+    } catch (error) {
+      console.error('Error al obtener progreso:', error);
+    }
+  };
+
+  // Asegurarnos de que se llame al montar el componente y después de cada actualización
+  useEffect(() => {
+    fetchProgress();
+  }, []);
+
+  // Actualizar cuando se complete un juego
+  const handleGameComplete = async (activityId, gameId) => {
+    try {
+      const activity = activities.find(a => a.id === activityId);
+      await fetch('/api/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          gameCategory: activity.title,
+          level: gameId + 1
+        })
+      });
+
+      // Recargar el progreso después de la actualización
+      await fetchProgress();
+    } catch (error) {
+      console.error('Error al actualizar progreso:', error);
+    }
   };
 
   return (

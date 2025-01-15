@@ -10,6 +10,7 @@ router.post('/login', userController.login);
 
 // Rutas autenticadas
 router.put('/profile', auth, userController.updateProfile);
+router.get('/profile', auth, userController.getProfile);
 
 // Rutas de administrador
 router.get('/users', auth, isAdmin, userController.getAllUsers);

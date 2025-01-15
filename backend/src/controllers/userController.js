@@ -150,6 +150,39 @@ const userController = {
         error: 'Error al eliminar el usuario'
       });
     }
+  },
+
+  getProfile: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      console.log('Obteniendo perfil para usuario:', userId); // Log para debug
+
+      if (!userId) {
+        console.log('No se encontró ID de usuario en el token');
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+
+      const user = await userModel.findById(userId);
+      console.log('Usuario encontrado:', user); // Log para debug
+
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar
+      });
+    } catch (error) {
+      console.error('Error al obtener perfil:', error);
+      res.status(500).json({ 
+        error: 'Error al obtener el perfil',
+        details: error.message 
+      });
+    }
   }
 };
 

@@ -1,14 +1,27 @@
 const jwt = require('jsonwebtoken');
 
-const auth = (req, res, next) => {
+module.exports = (req, res, next) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No se proporcionó token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Formato de token inválido' });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.userId) {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+
     req.user = { id: decoded.userId };
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Por favor autentícate' });
+    console.error('Error de autenticación:', error);
+    res.status(401).json({ message: 'Autenticación fallida', error: error.message });
   }
-};
-
-module.exports = auth; 
+}; 

@@ -1,9 +1,20 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaHome, FaUserAlt, FaAward, FaImage } from 'react-icons/fa'; // Añadido FaImage para el Avatar
+import { LogOut, User, ChevronDown } from 'lucide-react'; // Importa el ícono de logout
+import authService from '../services/authService';
 
-function Navbar() {
+function Navbar({ onLogout }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // Estado para el menú móvil
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const handleLogout = () => {
+    authService.logout();
+    onLogout(); // Notifica al App.jsx
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white shadow-lg">
@@ -71,6 +82,43 @@ function Navbar() {
                 )}
               </svg>
             </button>
+          </div>
+
+          {/* Menú de usuario */}
+          <div className="flex items-center">
+            <div className="relative">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none"
+              >
+                <User className="w-6 h-6" />
+                <span>{user?.name || 'Usuario'}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+
+              {/* Menú desplegable */}
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                  <div className="py-1">
+                    <button
+                      onClick={() => navigate('/perfil')}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Mi Perfil
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      <div className="flex items-center">
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Cerrar Sesión
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

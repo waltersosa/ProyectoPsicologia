@@ -87,6 +87,21 @@ const userModel = {
     } catch (error) {
       throw error;
     }
+  },
+
+  async findById(id) {
+    const query = `
+      SELECT id, name, email, role, avatar
+      FROM users
+      WHERE id = $1
+    `;
+    try {
+      const result = await pool.query(query, [id]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error en findById:', error);
+      throw error;
+    }
   }
 };
 

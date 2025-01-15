@@ -1,126 +1,186 @@
-import React, { useState } from 'react';
-import { 
-  Trophy,
-  Star,
-  Heart,
-  Smile,
-  Gamepad,
-  Medal,
-  Brain,
-  Calendar,
-  ChevronRight
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { AlertCircle, Save, User } from 'lucide-react';
+import authService from '../services/authService';
 
 function Perfil() {
-  const [user] = useState({
-    name: 'Alex García',
-    age: 12,
-    avatar: 'https://images.unsplash.com/photo-1595702419689-b64c73d36481?w=150&h=150&fit=crop',
-    level: 8,
-    emotionalPoints: 2450,
-    streak: 15,
-    achievements: [
-      { name: 'Certificado de Calma', description: '5 días seguidos practicando respiración', icon: <Heart className="w-6 h-6" /> },
-      { name: 'Certificado de Explorador Emocional', description: 'Identificó 10 emociones diferentes', icon: <Brain className="w-6 h-6" /> },
-      { name: 'Certificado de Jugador Experto', description: 'Completó 20 juegos', icon: <Gamepad className="w-6 h-6" /> }
-    ],
-    recentEmotions: [
-      { emotion: 'Feliz', date: 'Hoy', intensity: 4 },
-      { emotion: 'Triste', date: 'Ayer', intensity: 3 },
-      { emotion: 'Ansioso', date: 'Hace 2 días', intensity: 2 }
-    ],
-    gameHistory: [
-      'Jardín de la Calma',
-      'Detector de Emociones',
-      'Aventura Emocional',
-      'Encuentra el Par',
-      'Busca las Diferencias'
-    ]
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    avatar: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const [note, setNote] = useState('');
+  // Cargar datos del usuario al montar el componente
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+      setUser(userData);
+      setFormData({
+        name: userData.name || '',
+        email: userData.email || '',
+        avatar: userData.avatar || ''
+      });
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
+    setSuccess('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const updatedUser = await authService.updateProfile(formData);
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setSuccess('Perfil actualizado exitosamente');
+    } catch (error) {
+      setError(error.message || 'Error al actualizar el perfil');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) {
+    return <div>Cargando...</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Columna izquierda: Perfil y Logros */}
-          <div className="space-y-6">
-            {/* Perfil Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="flex flex-col items-center text-center">
-                <div className="relative mb-4">
-                  <img
-                    src={user.avatar}
-                    alt="Avatar"
-                    className="w-24 h-24 rounded-full border-4 border-purple-400 shadow-md"
-                  />
-                  <div className="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2">
-                    <Star className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-                <p className="text-purple-600 font-medium">Nivel {user.level} • {user.age} años</p>
-                <div className="mt-3 flex items-center justify-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-yellow-500" />
-                    <span className="text-sm font-medium">{user.emotionalPoints} pts</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                    <span className="text-sm font-medium">{user.streak} días</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Logros Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Mis Certificados</h2>
-              <div className="space-y-3">
-                {user.achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl">
-                    <div className="bg-white p-2 rounded-lg shadow-sm">
-                      {achievement.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-800 text-sm">{achievement.name}</p>
-                      <p className="text-xs text-gray-500">{achievement.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8"
+      >
+        <div className="text-center mb-8">
+          <div className="h-24 w-24 rounded-full bg-blue-100 mx-auto mb-4 flex items-center justify-center">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Avatar"
+                className="h-20 w-20 rounded-full object-cover"
+              />
+            ) : (
+              <User className="h-12 w-12 text-blue-500" />
+            )}
           </div>
+          <h2 className="text-3xl font-bold text-gray-800">Mi Perfil</h2>
+          <p className="mt-2 text-gray-600">
+            Gestiona tu información personal
+          </p>
+        </div>
 
-          {/* Columna central: Emociones */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Mi Diario Emocional</h2>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Escribe aquí cómo te sientes..."
-              className="w-full h-32 p-2 border border-gray-300 rounded-lg"
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Nombre */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Nombre completo
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
-          {/* Columna derecha: Historial de Juegos */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Historial de Juegos</h2>
-            <div className="space-y-3">
-              {user.gameHistory.map((game, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <Gamepad className="w-5 h-5 text-purple-500" />
-                    <span className="font-medium text-gray-700">{game}</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                </div>
-              ))}
+          {/* Email (solo lectura) */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value={formData.email}
+              readOnly
+              className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm bg-gray-50 text-gray-600"
+            />
+          </div>
+
+          {/* Rol (solo lectura) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Rol
+            </label>
+            <div className="mt-1 block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm bg-gray-50 text-gray-600">
+              {user.role === 'admin' ? 'Administrador' : 'Usuario'}
             </div>
           </div>
+
+          {/* Mensajes de error y éxito */}
+          {error && (
+            <div className="text-center text-sm text-red-600">
+              <AlertCircle className="inline-block w-4 h-4 mr-1" />
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="text-center text-sm text-green-600">
+              <Save className="inline-block w-4 h-4 mr-1" />
+              {success}
+            </div>
+          )}
+
+          {/* Botón de guardar */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {loading ? (
+              <>
+                <span className="animate-spin mr-2">⚪</span>
+                Guardando...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                Guardar cambios
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Información adicional */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900">Información de la cuenta</h3>
+          <dl className="mt-4 space-y-4">
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Miembro desde</dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {new Date(user.created_at).toLocaleDateString()}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Última actualización</dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {new Date(user.updated_at).toLocaleDateString()}
+              </dd>
+            </div>
+          </dl>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

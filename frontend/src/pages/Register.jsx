@@ -4,16 +4,18 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import authService from '../services/authService';
 
-function Login({ onLogin }) {
-  const [showPassword, setShowPassword] = useState(false);
+function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
+    confirmPassword: ''
   });
-  const [emailError, setEmailError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [emailError, setEmailError] = useState('');
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._-]+@pucese\.edu\.ec$/;
@@ -22,29 +24,37 @@ function Login({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+    setEmailError('');
+
+    // Validaciones
     if (!validateEmail(formData.email)) {
       setEmailError('Por favor, utiliza un correo institucional (@pucese.edu.ec)');
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
     setLoading(true);
-    setError('');
-    
+
     try {
-      console.log('Intentando login con:', {
+      await authService.register({
+        name: formData.name,
         email: formData.email,
         password: formData.password
       });
 
-      const response = await authService.login(formData.email, formData.password);
-      console.log('Respuesta del servidor:', response);
-      
-      onLogin(response.user);
-      navigate('/');
+      navigate('/login');
     } catch (error) {
-      console.error('Error completo:', error);
-      setError(error.message || 'Error al iniciar sesión');
+      setError(error.message || 'Error al registrar usuario');
     } finally {
       setLoading(false);
     }
@@ -57,10 +67,10 @@ function Login({ onLogin }) {
       [name]: value
     }));
 
-    // Limpiar mensaje de error cuando el usuario comienza a escribir
     if (name === 'email') {
       setEmailError('');
     }
+    setError('');
   };
 
   return (
@@ -70,19 +80,34 @@ function Login({ onLogin }) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl"
       >
-        {/* Logo y título */}
         <div className="text-center">
           <div className="text-6xl mb-4">🌈</div>
-          <h2 className="text-3xl font-bold text-gray-800">Emotion Play</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Crear Cuenta</h2>
           <p className="mt-2 text-gray-600">
-            Inicia sesión para continuar tu viaje emocional
+            Regístrate para comenzar tu viaje emocional
           </p>
         </div>
 
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
-            {/* Campo de email */}
+            {/* Nombre */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Nombre completo
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Juan Pérez"
+              />
+            </div>
+
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Correo electrónico institucional
@@ -105,12 +130,9 @@ function Login({ onLogin }) {
                   {emailError}
                 </div>
               )}
-              <p className="mt-1 text-sm text-gray-500">
-                Solo se permiten correos con dominio @pucese.edu.ec
-              </p>
             </div>
 
-            {/* Campo de contraseña */}
+            {/* Contraseña */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Contraseña
@@ -135,27 +157,34 @@ function Login({ onLogin }) {
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* Recordar y olvidé contraseña */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="remember-me" className="ml-2 text-gray-600">
-                Recordarme
+            {/* Confirmar Contraseña */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirmar contraseña
               </label>
+              <div className="mt-1 relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
-            <button type="button" className="text-blue-500 hover:text-blue-600">
-              ¿Olvidaste tu contraseña?
-            </button>
           </div>
 
-          {/* Botón de inicio de sesión */}
+          {error && (
+            <div className="text-center text-sm text-red-600">
+              <AlertCircle className="inline-block w-4 h-4 mr-1" />
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -163,27 +192,19 @@ function Login({ onLogin }) {
               loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {loading ? 'Registrando...' : 'Registrarse'}
           </button>
 
-          {/* Enlace de registro */}
           <div className="text-center text-sm">
-            <span className="text-gray-600">¿No tienes una cuenta? </span>
-            <Link to="/register" className="text-blue-500 hover:text-blue-600 font-medium">
-              Regístrate aquí
+            <span className="text-gray-600">¿Ya tienes una cuenta? </span>
+            <Link to="/login" className="text-blue-500 hover:text-blue-600 font-medium">
+              Inicia sesión aquí
             </Link>
           </div>
         </form>
-
-        {error && (
-          <div className="mt-2 text-center text-sm text-red-600">
-            <AlertCircle className="inline-block w-4 h-4 mr-1" />
-            {error}
-          </div>
-        )}
       </motion.div>
     </div>
   );
 }
 
-export default Login; 
+export default Register; 

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { getApiUrl } from '../../../services/config';
 
 const estados = [
   { nombre: "Feliz", instruccion: "La felicidad es una emoción de alegría y bienestar." },
@@ -19,6 +21,7 @@ function ReconocerEmociones1() {
   const [contador, setContador] = useState(0);
   const [tiempo, setTiempo] = useState(0);
   const [juegoIniciado, setJuegoIniciado] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -34,7 +37,11 @@ function ReconocerEmociones1() {
 
   const iniciarJuego = () => setJuegoIniciado(true);
 
-  const verificarEstados = () => {
+  const irSiguienteNivel = () => {
+    navigate('/games/ComprensionEmocional/Nivel2');
+  };
+
+  const verificarEstados = async () => {
     if (!juegoIniciado) return;
     const todosCoinciden = cuadrados.every(
       (estado) => estados[estado].nombre === estados[estadoReferencia].nombre
@@ -48,6 +55,34 @@ function ReconocerEmociones1() {
       } else {
         setJuegoTerminado(true);
         setJuegoIniciado(false);
+        
+        try {
+          const userId = localStorage.getItem('userId');
+          console.log('Enviando progreso para usuario:', userId);
+          
+          const response = await fetch(getApiUrl('/api/progress'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+              gameCategory: 'Comprensión Emocional',
+              level: 1
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Error al actualizar progreso');
+          }
+
+          console.log('Progreso enviado nivel 1:', {
+            gameCategory: 'Comprensión Emocional',
+            level: 1
+          });
+        } catch (error) {
+          console.error('Error al actualizar progreso:', error);
+        }
       }
     }
   };
@@ -165,12 +200,29 @@ function ReconocerEmociones1() {
                 <div className="text-center p-6">
                   <h2 className="text-2xl font-bold text-green-600 mb-4">¡Felicidades! 🎉</h2>
                   <p className="text-lg text-gray-700 mb-6">Has completado todas las emociones correctamente</p>
-                  <button
-                    onClick={reiniciarJuego}
-                    className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300"
-                  >
-                    Jugar otra vez
-                  </button>
+                  <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
+                    <button
+                      onClick={reiniciarJuego}
+                      className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300"
+                    >
+                      Jugar otra vez
+                    </button>
+                    <button
+                      onClick={irSiguienteNivel}
+                      className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
+                    >
+                      Pasar al siguiente nivel
+                    </button>
+                    <button
+                      onClick={() => navigate('/')}
+                      className="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition-colors duration-300"
+                    >
+                      Volver al inicio
+                    </button>
+                  </div>
+                  <div className="mt-4 text-sm text-gray-600">
+                    Has desbloqueado el siguiente nivel
+                  </div>
                 </div>
               )}
             </div>
