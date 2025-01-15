@@ -10,21 +10,46 @@ function Perfil() {
     email: '',
     avatar: ''
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   // Cargar datos del usuario al montar el componente
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData) {
-      setUser(userData);
-      setFormData({
-        name: userData.name || '',
-        email: userData.email || '',
-        avatar: userData.avatar || ''
-      });
-    }
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No hay token disponible');
+        }
+
+        const response = await fetch('http://localhost:5000/api/users/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al obtener datos del usuario');
+        }
+
+        const data = await response.json();
+        setUser(data);
+        setFormData({
+          name: data.name || '',
+          email: data.email || '',
+          avatar: data.avatar || ''
+        });
+      } catch (error) {
+        console.error('Error al obtener datos del usuario:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const handleChange = (e) => {
@@ -55,8 +80,12 @@ function Perfil() {
     }
   };
 
-  if (!user) {
+  if (loading) {
     return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -149,16 +178,11 @@ function Perfil() {
             }`}
           >
             {loading ? (
-              <>
-                <span className="animate-spin mr-2">⚪</span>
-                Guardando...
-              </>
+              <span className="animate-spin mr-2">⚪</span>
             ) : (
-              <>
-                <Save className="w-5 h-5 mr-2" />
-                Guardar cambios
-              </>
+              <Save className="w-5 h-5 mr-2" />
             )}
+            Guardar cambios
           </button>
         </form>
 

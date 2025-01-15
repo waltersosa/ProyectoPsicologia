@@ -8,7 +8,7 @@ function Navbar({ onLogout }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // Estado para el menú móvil
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const userName = localStorage.getItem('userName'); // Recupera el nombre del usuario
 
   const handleLogout = () => {
     authService.logout();
@@ -43,7 +43,7 @@ function Navbar({ onLogout }) {
             </Link>
             <Link to="/perfil" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md flex items-center">
               <FaUserAlt className="mr-1" /> {/* Icono de Perfil */}
-              Mi Perfil
+              {userName || 'Mi Perfil'} {/* Muestra el nombre del usuario o 'Mi Perfil' */}
             </Link>
             <Link to="/avatar" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md flex items-center">
               <FaImage className="mr-1" /> {/* Icono de Avatar */}
@@ -92,7 +92,7 @@ function Navbar({ onLogout }) {
                 className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none"
               >
                 <User className="w-6 h-6" />
-                <span>{user?.name || 'Usuario'}</span>
+                <span>{userName || 'Usuario'}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
 
