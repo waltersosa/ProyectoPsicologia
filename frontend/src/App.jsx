@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Home from "./pages/Home";
 import Certificates from "./pages/Certificates";
-import MemoryGame from "./games/AtencionYMemoria/MemoryGame";
+import JuegoMemoria1 from "./games/AtencionYMemoria/Nivel1/JuegoMemoria1";
+import JuegoMemoria2 from "./games/AtencionYMemoria/Nivel2/JuegoMemoria2";
+import JuegoMemoria3 from "./games/AtencionYMemoria/Nivel3/JuegoMemoria3";
 import RecognizeEmotionsLevel1 from "./games/ComprensionEmocional/Nivel1/ReconocerEmociones1";
 import RecognizeEmotionsLevel2 from "./games/ComprensionEmocional/Nivel2/ReconocerEmociones2";
 import RecognizeEmotionsLevel3 from "./games/ComprensionEmocional/Nivel3/ReconocerEmociones3";
@@ -13,8 +15,7 @@ import Perfil from "./pages/Perfil";
 import Avatar from "./pages/Avatar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import authService from './services/authService';
-import GameAccess from './components/GameAccess';
+import authService from "./services/authService";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
@@ -27,7 +28,6 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  // Componente para proteger rutas
   const ProtectedRoute = ({ children }) => {
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;
@@ -38,45 +38,23 @@ function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
-        {/* Navbar solo se muestra si estamos autenticados */}
         {isAuthenticated && <Navbar onLogout={handleLogout} />}
-
-        {/* Contenido principal */}
         <main className="flex-grow">
           <Routes>
-            {/* Ruta de login */}
             <Route
               path="/login"
               element={
-                !isAuthenticated ? (
-                  <Login onLogin={handleLogin} />
-                ) : (
-                  <Navigate to="/" replace />
-                )
+                !isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/" replace />
               }
             />
-
-            {/* Ruta de registro */}
             <Route
               path="/register"
-              element={
-                !isAuthenticated ? (
-                  <Register />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
+              element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
             />
-
-            {/* Rutas protegidas */}
             <Route
               path="/"
               element={
-                isAuthenticated ? (
-                  <Home />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                isAuthenticated ? <Home /> : <Navigate to="/login" replace />
               }
             />
             <Route
@@ -106,10 +84,26 @@ function App() {
 
             {/* Juegos protegidos */}
             <Route
-              path="/games/AtencionYMemoria/MemoryGame"
+              path="/games/AtencionYMemoria/Nivel1/JuegoMemoria1"
               element={
                 <ProtectedRoute>
-                  <MemoryGame />
+                  <JuegoMemoria1 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/games/AtencionYMemoria/Nivel1/JuegoMemoria2"
+              element={
+                <ProtectedRoute>
+                  <JuegoMemoria2 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/games/AtencionYMemoria/Nivel1/JuegoMemoria3"
+              element={
+                <ProtectedRoute>
+                  <JuegoMemoria3 />
                 </ProtectedRoute>
               }
             />
@@ -147,8 +141,6 @@ function App() {
             />
           </Routes>
         </main>
-
-        {/* Footer solo se muestra si estamos autenticados */}
         {isAuthenticated && <Footer />}
       </div>
     </Router>

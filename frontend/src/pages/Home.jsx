@@ -3,7 +3,6 @@ import ActivityCard from '../components/ActivityCard';
 import { useState, useEffect } from 'react';
 import { getApiUrl } from '../services/config';
 
-// Renombramos la constante inicial para evitar conflictos
 const initialActivities = [
   {
     id: 1,
@@ -14,7 +13,7 @@ const initialActivities = [
     games: [
       {
         name: 'Encuentra el Par',
-        route: '/games/AtencionYMemoria/MemoryGame', // Ruta de la página de juego
+        route: '/games/AtencionYMemoria/Nivel1/JuegoMemoria1', // Actualización de ruta
         locked: false,
         description: 'Encuentra las parejas de cartas iguales',
       },
@@ -53,9 +52,9 @@ const initialActivities = [
       },
       {
         name: 'Nivel 3: Reconocer Emociones 3',
-        route: '/games/ComprensionEmocional/Nivel3', // Ruta del segundo nivel
+        route: '/games/ComprensionEmocional/Nivel3', // Ruta del tercer nivel
         locked: true,
-        description: 'Identifica emociones segun el escenario que se presenta',
+        description: 'Identifica emociones según el escenario que se presenta',
       },
     ],
   },
@@ -74,13 +73,13 @@ const initialActivities = [
       },
       {
         name: 'Viaje de Relajación',
-        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
+        route: '/games/RegulacionEmocional/RelaxationJourney', // Ajuste en la ruta
         locked: true,
         description: 'Realiza un viaje guiado de relajación',
       },
       {
         name: 'Reestructuración de Pensamientos',
-        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
+        route: '/games/RegulacionEmocional/ThoughtRestructuring', // Ajuste en la ruta
         locked: true,
         description: 'Aprende a transformar pensamientos negativos',
       },
@@ -89,34 +88,33 @@ const initialActivities = [
 ];
 
 function Home() {
-  // Usamos initialActivities como valor inicial del estado
   const [activities, setActivities] = useState(initialActivities);
 
   const fetchProgress = async () => {
     try {
       const response = await fetch(getApiUrl('/api/progress'), {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      
+
       if (response.ok) {
         const progress = await response.json();
-        console.log('Progreso recibido:', progress); // Log para debug
-        
-        const updatedActivities = initialActivities.map(activity => {
+        console.log('Progreso recibido:', progress);
+
+        const updatedActivities = initialActivities.map((activity) => {
           if (activity.title === 'Comprensión Emocional') {
-            const categoryProgress = progress.find(p => p.game_category === 'Comprensión Emocional');
+            const categoryProgress = progress.find((p) => p.game_category === 'Comprensión Emocional');
             const levelCompleted = categoryProgress ? categoryProgress.level_completed : 0;
-            
-            console.log('Nivel completado:', levelCompleted); // Log para debug
-            
+
+            console.log('Nivel completado:', levelCompleted);
+
             return {
               ...activity,
               games: activity.games.map((game, index) => ({
                 ...game,
-                locked: index > levelCompleted
-              }))
+                locked: index > levelCompleted,
+              })),
             };
           }
           return activity;
@@ -129,28 +127,25 @@ function Home() {
     }
   };
 
-  // Asegurarnos de que se llame al montar el componente y después de cada actualización
   useEffect(() => {
     fetchProgress();
   }, []);
 
-  // Actualizar cuando se complete un juego
   const handleGameComplete = async (activityId, gameId) => {
     try {
-      const activity = activities.find(a => a.id === activityId);
+      const activity = activities.find((a) => a.id === activityId);
       await fetch('/api/progress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           gameCategory: activity.title,
-          level: gameId + 1
-        })
+          level: gameId + 1,
+        }),
       });
 
-      // Recargar el progreso después de la actualización
       await fetchProgress();
     } catch (error) {
       console.error('Error al actualizar progreso:', error);
@@ -159,7 +154,6 @@ function Home() {
 
   return (
     <div className="space-y-8 px-4 md:px-8">
-      {/* Encabezado animado */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -173,7 +167,6 @@ function Home() {
         </p>
       </motion.div>
 
-      {/* Tarjetas de actividades */}
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         initial="hidden"
@@ -199,7 +192,7 @@ function Home() {
             <ActivityCard
               activity={activity}
               index={index}
-              onGameComplete={(gameId) => handleGameComplete(activity.id, gameId)} // Pasamos la función para desbloquear
+              onGameComplete={(gameId) => handleGameComplete(activity.id, gameId)}
             />
           </motion.div>
         ))}

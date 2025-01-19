@@ -123,7 +123,6 @@ function ReconocerEmociones1() {
                 <Info className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500" />
                 Reconocimiento de Emociones
               </h1>
-
               <div className="bg-blue-50 rounded-xl p-4 lg:p-5">
                 <h2 className="text-base lg:text-lg font-semibold text-blue-800 mb-3">¿Cómo jugar?</h2>
                 <ul className="space-y-1 text-sm lg:text-base text-gray-700">
