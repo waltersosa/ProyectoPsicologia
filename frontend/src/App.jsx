@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Certificates from "./pages/Certificates";
 import JuegoMemoria1 from "./games/AtencionYMemoria/Nivel1/JuegoMemoria1";
 import JuegoMemoria2 from "./games/AtencionYMemoria/Nivel2/JuegoMemoria2";
-import JuegoMemoria3 from "./games/AtencionYMemoria/Nivel3/JuegoMemoria3";
 import RecognizeEmotionsLevel1 from "./games/ComprensionEmocional/Nivel1/ReconocerEmociones1";
 import RecognizeEmotionsLevel2 from "./games/ComprensionEmocional/Nivel2/ReconocerEmociones2";
 import RecognizeEmotionsLevel3 from "./games/ComprensionEmocional/Nivel3/ReconocerEmociones3";
@@ -92,18 +91,10 @@ function App() {
               }
             />
             <Route
-              path="/games/AtencionYMemoria/Nivel1/JuegoMemoria2"
+              path="/games/AtencionYMemoria/Nivel2/JuegoMemoria2"
               element={
                 <ProtectedRoute>
                   <JuegoMemoria2 />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/games/AtencionYMemoria/Nivel1/JuegoMemoria3"
-              element={
-                <ProtectedRoute>
-                  <JuegoMemoria3 />
                 </ProtectedRoute>
               }
             />

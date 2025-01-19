@@ -3,6 +3,7 @@ import ReactCardFlip from "react-card-flip";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getApiUrl } from "../../../services/config";
 
 const emojis = ["😊", "😎", "🤔", "😍", "🤩", "😌", "🥳", "😇"];
 const cards = [...emojis, ...emojis].map((emoji, index) => ({
@@ -23,10 +24,12 @@ function JuegoMemoria1() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const navigate = useNavigate();
 
+  // Inicializa las cartas al iniciar el juego
   useEffect(() => {
     setGameCards(shuffleCards([...cards]));
   }, []);
 
+  // Controla el temporizador del juego
   useEffect(() => {
     let timer;
     if (gameStarted && !gameOver) {
@@ -44,8 +47,9 @@ function JuegoMemoria1() {
   };
 
   const handleCardClick = (index) => {
-    if (!gameStarted || isChecking || flippedCards.length === 2 || gameCards[index].isMatched)
+    if (!gameStarted || isChecking || flippedCards.length === 2 || gameCards[index].isMatched) {
       return;
+    }
 
     const newCards = [...gameCards];
     newCards[index].isFlipped = true;
@@ -56,20 +60,21 @@ function JuegoMemoria1() {
 
     if (newFlippedCards.length === 2) {
       setIsChecking(true);
-      setMoves(moves + 1);
+      setMoves((prev) => prev + 1);
 
       const [firstIndex, secondIndex] = newFlippedCards;
       if (gameCards[firstIndex].content === gameCards[secondIndex].content) {
         newCards[firstIndex].isMatched = true;
         newCards[secondIndex].isMatched = true;
         setGameCards(newCards);
-        setMatches(matches + 1);
+        setMatches((prev) => prev + 1);
         setFlippedCards([]);
         setIsChecking(false);
 
         if (matches + 1 === emojis.length) {
           setGameOver(true);
           setGameStarted(false);
+          sendGameProgress();
         }
       } else {
         setTimeout(() => {
@@ -98,11 +103,33 @@ function JuegoMemoria1() {
   };
 
   const navigateToNextLevel = () => {
-    navigate("/games/AtencionYMemoria/Nivel1/JuegoMemoria2");
+    navigate("/games/AtencionYMemoria/Nivel2/JuegoMemoria2");
   };
 
-  const navigateToHome = () => {
-    navigate("/");
+  const sendGameProgress = async () => {
+    try {
+      const response = await fetch(getApiUrl("/api/progress"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          gameCategory: "Atención y Memoria",
+          level: 1,
+          timeElapsed,
+          moves,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar el progreso");
+      }
+
+      console.log("Progreso enviado con éxito");
+    } catch (error) {
+      console.error("Error al enviar progreso:", error);
+    }
   };
 
   return (
@@ -115,15 +142,13 @@ function JuegoMemoria1() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Panel de información */}
           <div className="bg-white rounded-2xl shadow-xl p-4 lg:p-6">
-          <div className="space-y-4">
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-800 flex items-center gap-3">
-            <Info className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500" />
-            Encuentra el par
+            <div className="space-y-4">
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <Info className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500" />
+                Encuentra el par
               </h1>
               <div className="bg-blue-50 rounded-xl p-4">
-                <h2 className="text-lg font-semibold text-blue-800">
-                  ¿Cómo jugar?
-                </h2>
+                <h2 className="text-lg font-semibold text-blue-800">¿Cómo jugar?</h2>
                 <ul className="text-sm text-gray-700 space-y-1">
                   <li>1. Haz clic en las tarjetas para voltearlas.</li>
                   <li>2. Encuentra las parejas iguales.</li>
@@ -132,21 +157,15 @@ function JuegoMemoria1() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-green-50 rounded-xl p-3">
-                  <p className="text-sm text-green-600 font-medium">
-                    Movimientos
-                  </p>
+                  <p className="text-sm text-green-600 font-medium">Movimientos</p>
                   <p className="text-2xl font-bold text-green-700">{moves}</p>
                 </div>
                 <div className="bg-purple-50 rounded-xl p-3">
-                  <p className="text-sm text-purple-600 font-medium">
-                    Tiempo transcurrido
-                  </p>
+                  <p className="text-sm text-purple-600 font-medium">Tiempo transcurrido</p>
                   <p className="text-2xl font-bold text-purple-700">{timeElapsed}s</p>
                 </div>
                 <div className="bg-yellow-50 rounded-xl p-3">
-                  <p className="text-sm text-yellow-600 font-medium">
-                    Caras completadas
-                  </p>
+                  <p className="text-sm text-yellow-600 font-medium">Caras completadas</p>
                   <p className="text-2xl font-bold text-yellow-700">
                     {matches} / {emojis.length}
                   </p>
@@ -183,9 +202,7 @@ function JuegoMemoria1() {
               </div>
             ) : (
               <div className="text-center p-6">
-                <h2 className="text-2xl font-bold text-green-600 mb-4">
-                  ¡Felicidades! 🎉
-                </h2>
+                <h2 className="text-2xl font-bold text-green-600 mb-4">¡Felicidades! 🎉</h2>
                 <p className="text-lg text-gray-700 mb-6">
                   Has completado todas las emociones correctamente
                 </p>
@@ -202,15 +219,6 @@ function JuegoMemoria1() {
                   >
                     Pasar al siguiente nivel
                   </button>
-                  <button
-                    onClick={navigateToHome}
-                    className="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition-colors duration-300"
-                  >
-                    Volver al inicio
-                  </button>
-                </div>
-                <div className="mt-4 text-sm text-gray-600">
-                  Has desbloqueado el siguiente nivel
                 </div>
               </div>
             )}

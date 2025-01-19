@@ -1,87 +1,69 @@
-import { motion } from 'framer-motion';
-import ActivityCard from '../components/ActivityCard';
-import { useState, useEffect } from 'react';
-import { getApiUrl } from '../services/config';
+import { motion } from "framer-motion";
+import ActivityCard from "../components/ActivityCard";
+import { useState, useEffect } from "react";
+import { getApiUrl } from "../services/config";
 
 const initialActivities = [
   {
     id: 1,
-    title: 'Atención y Memoria',
-    description: 'Mejora tu concentración y memoria con juegos divertidos',
-    icon: '🧠',
-    color: 'bg-blue-500',
+    title: "Atención y Memoria",
+    description: "Mejora tu concentración y memoria con juegos divertidos",
+    icon: "🧠",
+    color: "bg-blue-500",
     games: [
       {
-        name: 'Encuentra el Par',
-        route: '/games/AtencionYMemoria/Nivel1/JuegoMemoria1', // Actualización de ruta
+        name: "Encuentra el Par",
+        route: "/games/AtencionYMemoria/Nivel1/JuegoMemoria1",
         locked: false,
-        description: 'Encuentra las parejas de cartas iguales',
+        description: "Encuentra las parejas de cartas iguales",
       },
       {
-        name: 'Busca las Diferencias',
-        route: '/games/AtencionYMemoria/diferencias', // Ruta de la página de juego
+        name: "Prueba de Concentración",
+        route: "/games/AtencionYMemoria/Nivel2/JuegoMemoria2",
         locked: true,
-        description: 'Encuentra las diferencias entre dos imágenes',
-      },
-      {
-        name: 'Prueba de Concentración',
-        route: '/games/AtencionYMemoria/concentracion', // Ruta de la página de juego
-        locked: true,
-        description: 'Pon a prueba tu capacidad de concentración',
+        description: "Pon a prueba tu capacidad de concentración",
       },
     ],
   },
   {
     id: 2,
-    title: 'Comprensión Emocional',
-    description: 'Aprende a identificar y entender las emociones',
-    icon: '🎭',
-    color: 'bg-purple-500',
+    title: "Comprensión Emocional",
+    description: "Aprende a identificar y entender las emociones",
+    icon: "🎭",
+    color: "bg-purple-500",
     games: [
       {
-        name: 'Nivel 1: Reconocer Emociones 1',
-        route: '/games/ComprensionEmocional/Nivel1', // Ruta del primer nivel
+        name: "Nivel 1: Reconocer Emociones 1",
+        route: "/games/ComprensionEmocional/Nivel1",
         locked: false,
-        description: 'Completa las diferentes expresiones de emociones',
+        description: "Completa las diferentes expresiones de emociones",
       },
       {
-        name: 'Nivel 2: Reconocer Emociones 2',
-        route: '/games/ComprensionEmocional/Nivel2', // Ruta del segundo nivel
+        name: "Nivel 2: Reconocer Emociones 2",
+        route: "/games/ComprensionEmocional/Nivel2",
         locked: true,
-        description: 'Identifica las emociones usando palabras que las describen',
+        description: "Identifica las emociones usando palabras que las describen",
       },
       {
-        name: 'Nivel 3: Reconocer Emociones 3',
-        route: '/games/ComprensionEmocional/Nivel3', // Ruta del tercer nivel
+        name: "Nivel 3: Reconocer Emociones 3",
+        route: "/games/ComprensionEmocional/Nivel3",
         locked: true,
-        description: 'Identifica emociones según el escenario que se presenta',
+        description: "Identifica emociones según el escenario que se presenta",
       },
     ],
   },
   {
     id: 3,
-    title: 'Regulación Emocional',
-    description: 'Técnicas y ejercicios para manejar tus emociones',
-    icon: '🌟',
-    color: 'bg-green-500',
+    title: "Regulación Emocional",
+    description: "Técnicas y ejercicios para manejar tus emociones",
+    icon: "🌟",
+    color: "bg-green-500",
     games: [
       {
-        name: 'Ejercicios de Respiración',
-        route: '/games/RegulacionEmocional/BreathingExercise', // Ruta de la página de juego
+        name: "Ejercicios de Respiración",
+        route: "/games/RegulacionEmocional/BreathingExercise",
         locked: false,
-        description: 'Aprende técnicas de respiración para calmarte',
-      },
-      {
-        name: 'Viaje de Relajación',
-        route: '/games/RegulacionEmocional/RelaxationJourney', // Ajuste en la ruta
-        locked: true,
-        description: 'Realiza un viaje guiado de relajación',
-      },
-      {
-        name: 'Reestructuración de Pensamientos',
-        route: '/games/RegulacionEmocional/ThoughtRestructuring', // Ajuste en la ruta
-        locked: true,
-        description: 'Aprende a transformar pensamientos negativos',
+        description: "Aprende técnicas de respiración para calmarte",
       },
     ],
   },
@@ -92,65 +74,49 @@ function Home() {
 
   const fetchProgress = async () => {
     try {
-      const response = await fetch(getApiUrl('/api/progress'), {
+      const response = await fetch(getApiUrl("/api/progress"), {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       if (response.ok) {
         const progress = await response.json();
-        console.log('Progreso recibido:', progress);
+        console.log("Progreso recibido:", progress);
 
         const updatedActivities = initialActivities.map((activity) => {
-          if (activity.title === 'Comprensión Emocional') {
-            const categoryProgress = progress.find((p) => p.game_category === 'Comprensión Emocional');
-            const levelCompleted = categoryProgress ? categoryProgress.level_completed : 0;
+          const categoryProgress = progress.find(
+            (p) => p.game_category === activity.title
+          );
+          const levelCompleted = categoryProgress
+            ? categoryProgress.level_completed
+            : 0;
 
-            console.log('Nivel completado:', levelCompleted);
+          console.log(
+            `Progreso de ${activity.title}: Nivel completado ${levelCompleted}`
+          );
 
-            return {
-              ...activity,
-              games: activity.games.map((game, index) => ({
-                ...game,
-                locked: index > levelCompleted,
-              })),
-            };
-          }
-          return activity;
+          return {
+            ...activity,
+            games: activity.games.map((game, index) => ({
+              ...game,
+              locked: index > levelCompleted,
+            })),
+          };
         });
 
         setActivities(updatedActivities);
+      } else {
+        console.error("Error al obtener progreso: Response no ok");
       }
     } catch (error) {
-      console.error('Error al obtener progreso:', error);
+      console.error("Error al obtener progreso:", error);
     }
   };
 
   useEffect(() => {
     fetchProgress();
   }, []);
-
-  const handleGameComplete = async (activityId, gameId) => {
-    try {
-      const activity = activities.find((a) => a.id === activityId);
-      await fetch('/api/progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          gameCategory: activity.title,
-          level: gameId + 1,
-        }),
-      });
-
-      await fetchProgress();
-    } catch (error) {
-      console.error('Error al actualizar progreso:', error);
-    }
-  };
 
   return (
     <div className="space-y-8 px-4 md:px-8">
@@ -163,7 +129,8 @@ function Home() {
           ¡Bienvenido a tu Espacio Emocional!
         </h1>
         <p className="text-xl text-gray-600">
-          Explora actividades divertidas que te ayudarán a entender y manejar tus emociones
+          Explora actividades divertidas que te ayudarán a entender y manejar
+          tus emociones
         </p>
       </motion.div>
 
@@ -189,11 +156,7 @@ function Home() {
               visible: { opacity: 1, y: 0 },
             }}
           >
-            <ActivityCard
-              activity={activity}
-              index={index}
-              onGameComplete={(gameId) => handleGameComplete(activity.id, gameId)}
-            />
+            <ActivityCard activity={activity} index={index} />
           </motion.div>
         ))}
       </motion.div>
