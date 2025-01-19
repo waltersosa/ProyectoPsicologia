@@ -9,7 +9,7 @@ const progressRoutes = require('./routes/progressRoutes');
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5174', // Cambia esto a la URL de tu frontend
+  origin: 'http://localhost:5173', // Cambia esto a la URL de tu frontend
   credentials: true
 }));
 app.use(express.json());
