@@ -152,29 +152,32 @@ const userController = {
     }
   },
 
-  getProfile: async (req, res) => {
+  async getProfile(req, res) {
     try {
       const userId = req.user.id;
-      console.log('Obteniendo perfil para usuario:', userId); // Log para debug
-
+      console.log('Obteniendo perfil para usuario:', userId);
+  
       if (!userId) {
         console.log('No se encontró ID de usuario en el token');
         return res.status(401).json({ error: 'Usuario no autenticado' });
       }
-
+  
+      // Obtener datos del usuario
       const user = await userModel.findById(userId);
-      console.log('Usuario encontrado:', user); // Log para debug
-
+  
       if (!user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });
       }
-
+  
+      // Responder con los datos del usuario, incluyendo created_at y updated_at
       res.json({
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-        avatar: user.avatar
+        avatar: user.avatar,
+        created_at: user.created_at, // Fecha de registro
+        updated_at: user.updated_at, // Última vez que se actualizó
       });
     } catch (error) {
       console.error('Error al obtener perfil:', error);
@@ -184,6 +187,8 @@ const userController = {
       });
     }
   }
+  
+  
 };
 
 module.exports = userController; 

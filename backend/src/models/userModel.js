@@ -91,7 +91,7 @@ const userModel = {
 
   async findById(id) {
     const query = `
-      SELECT id, name, email, role, avatar
+      SELECT id, name, email, role, avatar, created_at, updated_at
       FROM users
       WHERE id = $1
     `;
@@ -103,6 +103,7 @@ const userModel = {
       throw error;
     }
   }
+  
 };
 
 module.exports = userModel; 
