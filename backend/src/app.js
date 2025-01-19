@@ -10,11 +10,23 @@ const progressRoutes = require('./routes/progressRoutes');
 // Configuración del servidor
 const app = express();
 
-// Middleware
+// Middleware de CORS con múltiples orígenes
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://transformation-vacations-donated-xbox.trycloudflare.com',
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Cambia esto a la URL de tu frontend
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origen no permitido por CORS'));
+    }
+  },
   credentials: true,
 }));
+
 app.use(express.json());
 
 // Middleware de logs (antes de las rutas)
