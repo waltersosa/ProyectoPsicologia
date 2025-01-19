@@ -61,7 +61,7 @@ const initialActivities = [
     games: [
       {
         name: "Ejercicios de Respiración",
-        route: "/games/RegulacionEmocional/BreathingExercise",
+        route: "games/RegulacionEmocional/Nivel1",
         locked: false,
         description: "Aprende técnicas de respiración para calmarte",
       },

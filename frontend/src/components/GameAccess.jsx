@@ -13,7 +13,7 @@ const GAME_REQUIREMENTS = {
     Nivel2: { required: ["AtencionYMemoria.Nivel1"] },
   },
   RegulacionEmocional: {
-    BreathingExercise: { required: ["ComprensionEmocional.Nivel1"] },
+    Nivel1: { required: ["ComprensionEmocional.Nivel1"] },
   },
 };
 

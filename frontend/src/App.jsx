@@ -7,7 +7,7 @@ import JuegoMemoria2 from "./games/AtencionYMemoria/Nivel2/JuegoMemoria2";
 import RecognizeEmotionsLevel1 from "./games/ComprensionEmocional/Nivel1/ReconocerEmociones1";
 import RecognizeEmotionsLevel2 from "./games/ComprensionEmocional/Nivel2/ReconocerEmociones2";
 import RecognizeEmotionsLevel3 from "./games/ComprensionEmocional/Nivel3/ReconocerEmociones3";
-import BreathingExercise from "./games/RegulacionEmocional/BreathingExercise";
+import RegulacionEmocional1 from "./games/RegulacionEmocional/Nivel1/RegulacionEmocional1";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Perfil from "./pages/Perfil";
@@ -123,10 +123,10 @@ function App() {
               }
             />
             <Route
-              path="/games/RegulacionEmocional/BreathingExercise"
+              path="/games/RegulacionEmocional/Nivel1"
               element={
                 <ProtectedRoute>
-                  <BreathingExercise />
+                  <RegulacionEmocional1 />
                 </ProtectedRoute>
               }
             />
