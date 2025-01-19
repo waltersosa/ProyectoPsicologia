@@ -1,7 +1,9 @@
 const API_URL = 'http://localhost:5000';
 
+// Construye la URL completa para un endpoint específico
 export const getApiUrl = (endpoint) => `${API_URL}${endpoint}`;
 
+// Configuración general de la API
 export const apiConfig = {
   baseURL: API_URL,
   headers: {
@@ -16,4 +18,4 @@ export const getAuthHeaders = () => {
     ...apiConfig.headers,
     Authorization: token ? `Bearer ${token}` : '',
   };
-}; 
+};
