@@ -19,7 +19,7 @@ import authService from "./services/authService";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
 
-  const handleLogin = (user) => {
+  const handleLogin = () => {
     setIsAuthenticated(true);
   };
 
@@ -37,23 +37,27 @@ function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+        {/* Navbar siempre visible si está autenticado */}
         {isAuthenticated && <Navbar onLogout={handleLogout} />}
         <main className="flex-grow">
           <Routes>
+            {/* Rutas públicas */}
             <Route
               path="/login"
-              element={
-                !isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/" replace />
-              }
+              element={!isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/" replace />}
             />
             <Route
               path="/register"
               element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
             />
+
+            {/* Rutas protegidas */}
             <Route
               path="/"
               element={
-                isAuthenticated ? <Home /> : <Navigate to="/login" replace />
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
               }
             />
             <Route
@@ -130,8 +134,12 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Ruta para manejar 404 */}
+            <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </main>
+        {/* Footer siempre visible si está autenticado */}
         {isAuthenticated && <Footer />}
       </div>
     </Router>
