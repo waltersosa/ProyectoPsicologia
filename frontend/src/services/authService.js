@@ -1,4 +1,4 @@
-import { apiConfig, getAuthHeaders, getApiUrl } from './config';
+import { getApiUrl } from './config';
 
 const authService = {
   async login(email, password) {
@@ -35,7 +35,9 @@ const authService = {
     try {
       const response = await fetch(getApiUrl('/api/users/register'), {
         method: 'POST',
-        headers: apiConfig.headers,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(userData),
       });
 
@@ -60,9 +62,17 @@ const authService = {
 
   async updateProfile(userData) {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No hay un token disponible para autenticar la solicitud');
+      }
+
       const response = await fetch(getApiUrl('/users/profile'), {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(userData),
       });
 
@@ -95,6 +105,16 @@ const authService = {
   isAdmin() {
     const user = JSON.parse(localStorage.getItem('user'));
     return user && user.role === 'admin';
+  },
+
+  getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.warn('No se encontró un token para agregar en los encabezados');
+    }
+    return token
+      ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      : { 'Content-Type': 'application/json' };
   },
 };
 

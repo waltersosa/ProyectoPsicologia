@@ -3,6 +3,7 @@ import ReactCardFlip from "react-card-flip";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getApiUrl } from "../../../services/config";
 
 const colors = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "pink", "lime"];
 
@@ -89,6 +90,7 @@ function JuegoMemoria2() {
           }, 3000);
         } else {
           setGameOver(true);
+          setGameStarted(false);
           sendGameProgress();
         }
       }
@@ -114,17 +116,19 @@ function JuegoMemoria2() {
     setGameStarted(false);
     generateSequence(roundLengths[0]);
   };
-
   const sendGameProgress = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token no encontrado. No se puede enviar el progreso.");
+      return;
+    }
+  
     try {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
-
-      await fetch(`/api/progress`, {
+      const response = await fetch(getApiUrl("/api/progress"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Quita este encabezado si el token no es necesario
         },
         body: JSON.stringify({
           gameCategory: "Atención y Memoria",
@@ -133,11 +137,17 @@ function JuegoMemoria2() {
           mistakes,
         }),
       });
+  
+      if (!response.ok) {
+        throw new Error("Error al enviar el progreso");
+      }
+  
+      console.log("Progreso enviado con éxito");
     } catch (error) {
       console.error("Error al enviar progreso:", error);
     }
   };
-
+  
   const navigateToCertificates = () => {
     navigate("/certificados");
   };
@@ -224,7 +234,6 @@ function JuegoMemoria2() {
                     Volver al inicio
                   </button>
                 </div>
-                <div className="mt-4 text-sm text-gray-600">¡Certificado desbloqueado!</div>
               </div>
             ) : (
               <div>

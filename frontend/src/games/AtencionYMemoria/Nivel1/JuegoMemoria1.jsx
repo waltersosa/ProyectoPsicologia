@@ -24,12 +24,10 @@ function JuegoMemoria1() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const navigate = useNavigate();
 
-  // Inicializa las cartas al iniciar el juego
   useEffect(() => {
     setGameCards(shuffleCards([...cards]));
   }, []);
 
-  // Controla el temporizador del juego
   useEffect(() => {
     let timer;
     if (gameStarted && !gameOver) {
@@ -47,9 +45,8 @@ function JuegoMemoria1() {
   };
 
   const handleCardClick = (index) => {
-    if (!gameStarted || isChecking || flippedCards.length === 2 || gameCards[index].isMatched) {
+    if (!gameStarted || isChecking || flippedCards.length === 2 || gameCards[index].isMatched)
       return;
-    }
 
     const newCards = [...gameCards];
     newCards[index].isFlipped = true;
@@ -60,14 +57,14 @@ function JuegoMemoria1() {
 
     if (newFlippedCards.length === 2) {
       setIsChecking(true);
-      setMoves((prev) => prev + 1);
+      setMoves(moves + 1);
 
       const [firstIndex, secondIndex] = newFlippedCards;
       if (gameCards[firstIndex].content === gameCards[secondIndex].content) {
         newCards[firstIndex].isMatched = true;
         newCards[secondIndex].isMatched = true;
         setGameCards(newCards);
-        setMatches((prev) => prev + 1);
+        setMatches(matches + 1);
         setFlippedCards([]);
         setIsChecking(false);
 
@@ -104,6 +101,10 @@ function JuegoMemoria1() {
 
   const navigateToNextLevel = () => {
     navigate("/games/AtencionYMemoria/Nivel2/JuegoMemoria2");
+  };
+
+  const navigateToHome = () => {
+    navigate("/");
   };
 
   const sendGameProgress = async () => {
@@ -148,7 +149,9 @@ function JuegoMemoria1() {
                 Encuentra el par
               </h1>
               <div className="bg-blue-50 rounded-xl p-4">
-                <h2 className="text-lg font-semibold text-blue-800">¿Cómo jugar?</h2>
+                <h2 className="text-lg font-semibold text-blue-800">
+                  ¿Cómo jugar?
+                </h2>
                 <ul className="text-sm text-gray-700 space-y-1">
                   <li>1. Haz clic en las tarjetas para voltearlas.</li>
                   <li>2. Encuentra las parejas iguales.</li>
@@ -161,11 +164,15 @@ function JuegoMemoria1() {
                   <p className="text-2xl font-bold text-green-700">{moves}</p>
                 </div>
                 <div className="bg-purple-50 rounded-xl p-3">
-                  <p className="text-sm text-purple-600 font-medium">Tiempo transcurrido</p>
+                  <p className="text-sm text-purple-600 font-medium">
+                    Tiempo transcurrido
+                  </p>
                   <p className="text-2xl font-bold text-purple-700">{timeElapsed}s</p>
                 </div>
                 <div className="bg-yellow-50 rounded-xl p-3">
-                  <p className="text-sm text-yellow-600 font-medium">Caras completadas</p>
+                  <p className="text-sm text-yellow-600 font-medium">
+                    Caras completadas
+                  </p>
                   <p className="text-2xl font-bold text-yellow-700">
                     {matches} / {emojis.length}
                   </p>
@@ -202,7 +209,9 @@ function JuegoMemoria1() {
               </div>
             ) : (
               <div className="text-center p-6">
-                <h2 className="text-2xl font-bold text-green-600 mb-4">¡Felicidades! 🎉</h2>
+                <h2 className="text-2xl font-bold text-green-600 mb-4">
+                  ¡Felicidades! 🎉
+                </h2>
                 <p className="text-lg text-gray-700 mb-6">
                   Has completado todas las emociones correctamente
                 </p>
@@ -219,6 +228,15 @@ function JuegoMemoria1() {
                   >
                     Pasar al siguiente nivel
                   </button>
+                  <button
+                    onClick={navigateToHome}
+                    className="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition-colors duration-300"
+                  >
+                    Volver al inicio
+                  </button>
+                </div>
+                <div className="mt-4 text-sm text-gray-600">
+                  Has desbloqueado el siguiente nivel
                 </div>
               </div>
             )}
