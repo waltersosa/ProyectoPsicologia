@@ -1,19 +1,16 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Solo para debug - NO usar en producción
-console.log('Intentando conectar con:', {
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD, // Temporalmente mostrar la contraseña para debug
-  port: process.env.DB_PORT
-});
+console.log('Conectando a la base de datos con las siguientes credenciales:');
+console.log(`Usuario: ${process.env.DB_USER}`);
+console.log(`Base de datos: ${process.env.DB_DATABASE}`);
+console.log(`Host: ${process.env.DB_HOST}`);
+console.log(`Puerto: ${process.env.DB_PORT}`);
 
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
+  database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
 });

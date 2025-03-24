@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const pool = require('./config/database');
+const { Pool } = require('pg');
 
 // Importar rutas
 const userRoutes = require('./routes/userRoutes');
@@ -13,7 +13,7 @@ const app = express();
 // Middleware de CORS con múltiples orígenes
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://transformation-vacations-donated-xbox.trycloudflare.com',
+  'https://farmer-removable-wi-sf.trycloudflare.com',
 ];
 
 app.use(cors({
@@ -38,6 +38,13 @@ app.use((req, res, next) => {
 // Ruta de prueba para verificar conexión a la base de datos
 app.get('/api/test', async (req, res) => {
   try {
+    const pool = new Pool({
+      user: process.env.DB_USER,
+      host: process.env.DB_HOST,
+      database: process.env.DB_DATABASE,
+      password: process.env.DB_PASSWORD,
+      port: process.env.DB_PORT,
+    });
     const result = await pool.query('SELECT NOW()');
     res.json({
       message: 'Conexión exitosa a la base de datos',
@@ -62,6 +69,7 @@ app.use((req, res) => {
 
 // Puerto del servidor
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
+

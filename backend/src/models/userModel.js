@@ -102,8 +102,13 @@ const userModel = {
       console.error('Error en findById:', error);
       throw error;
     }
+  },
+
+  async getUserById(userId) {
+    const query = 'SELECT id, name, email, role FROM users WHERE id = $1';
+    const result = await pool.query(query, [userId]);
+    return result.rows[0];
   }
-  
 };
 
 module.exports = userModel; 

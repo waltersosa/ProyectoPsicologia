@@ -7,7 +7,7 @@ const Avatar = () => {
         Crear mi avatar
       </h1>
       <iframe
-        src="/src/public/unity/index.html" // Ruta especificada
+        src="/src/public/unity/index.html"
         className="w-full h-[500px] border rounded-md shadow-lg"
         frameBorder="0"
         title="Unity Web Player"
